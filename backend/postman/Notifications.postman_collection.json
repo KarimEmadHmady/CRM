@@ -1,0 +1,293 @@
+{
+  "info": {
+    "_postman_id": "notifications-collection",
+    "name": "CRM - Notifications",
+    "description": "Notification management endpoints for CRM System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Notification",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"customer\": \"{{customerId}}\",\n    \"subscription\": \"{{subscriptionId}}\",\n    \"type\": \"custom\",\n    \"title\": \"Special Offer\",\n    \"message\": \"Dear customer, we have a special offer just for you! Get 20% off on your next renewal.\",\n    \"channel\": \"email\",\n    \"scheduledFor\": \"2024-01-15T10:00:00Z\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/notifications",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "notifications"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/notifications",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "notifications"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Notification Stats",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/notifications/stats",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "notifications", "stats"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Pending Notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/notifications/pending",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "notifications", "pending"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Subscription Expiry Notifications",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"daysBefore\": 5\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/notifications/subscription-expiry",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "notifications", "subscription-expiry"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Payment Reminder Notifications",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"daysBefore\": 3\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/notifications/payment-reminders",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "notifications", "payment-reminders"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Customer Notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/notifications/customer/{{customerId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "notifications", "customer", "{{customerId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Send Welcome Notification",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"message\": \"Welcome to our CRM system! We're excited to have you as a customer.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/notifications/customer/{{customerId}}/welcome",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "notifications", "customer", "{{customerId}}", "welcome"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Notification by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/notifications/{{notificationId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "notifications", "{{notificationId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Notification",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Updated Special Offer\",\n    \"message\": \"Updated message: Get 25% off on your next renewal!\",\n    \"scheduledFor\": \"2024-01-20T10:00:00Z\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/notifications/{{notificationId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "notifications", "{{notificationId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Send Notification",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/notifications/{{notificationId}}/send",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "notifications", "{{notificationId}}", "send"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Notification",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/notifications/{{notificationId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "notifications", "{{notificationId}}"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "customerId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "subscriptionId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "notificationId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

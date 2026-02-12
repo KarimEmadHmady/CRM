@@ -1,0 +1,275 @@
+{
+  "info": {
+    "_postman_id": "email-campaigns-collection",
+    "name": "CRM - Email Campaigns",
+    "description": "Email campaign management endpoints for CRM System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Email Campaign",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"New Year Promotion 2024\",\n    \"subject\": \"🎉 Special New Year Offer - 25% Off All Memberships!\",\n    \"template\": \"promotion\",\n    \"content\": \"Dear {{name}},\\n\\nHappy New Year! We're excited to offer you an exclusive 25% discount on all membership renewals. This limited-time offer is our way of thanking you for being a valued customer.\\n\\nUse code: NY2024\\n\\nBest regards,\\nThe CRM Team\",\n    \"targetAudience\": \"subscribed\",\n    \"scheduledFor\": \"2024-01-15T09:00:00Z\",\n    \"settings\": {\n        \"trackOpens\": true,\n        \"trackClicks\": true,\n        \"sendImmediately\": false\n    },\n    \"createdBy\": \"admin\",\n    \"notes\": \"New Year promotional campaign for existing subscribers\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/email-campaigns",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-campaigns"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Email Campaigns",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/email-campaigns",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-campaigns"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Test Email",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"to\": \"test@example.com\",\n    \"subject\": \"Test Email from CRM System\",\n    \"template\": \"welcome\",\n    \"content\": \"This is a test email to verify the email configuration is working properly.\",\n    \"templateData\": {\n        \"name\": \"Test User\",\n        \"company\": \"CRM System\"\n    }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/email-campaigns/test",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-campaigns", "test"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Email Campaign by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/email-campaigns/{{campaignId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-campaigns", "{{campaignId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Email Campaign",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Updated New Year Promotion 2024\",\n    \"subject\": \"🎉 Updated Special Offer - 30% Off All Memberships!\",\n    \"content\": \"Dear {{name}},\\n\\nWe've updated our New Year offer to an even better 30% discount! Don't miss this amazing opportunity.\\n\\nUse code: NY2024UP\\n\\nBest regards,\\nThe CRM Team\",\n    \"targetAudience\": \"all\",\n    \"notes\": \"Updated campaign with better discount\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/email-campaigns/{{campaignId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-campaigns", "{{campaignId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Launch Email Campaign",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/email-campaigns/{{campaignId}}/launch",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-campaigns", "{{campaignId}}", "launch"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Schedule Email Campaign",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"scheduledFor\": \"2024-02-01T10:00:00Z\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/email-campaigns/{{campaignId}}/schedule",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-campaigns", "{{campaignId}}", "schedule"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Pause Email Campaign",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/email-campaigns/{{campaignId}}/pause",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-campaigns", "{{campaignId}}", "pause"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Resume Email Campaign",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/email-campaigns/{{campaignId}}/resume",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-campaigns", "{{campaignId}}", "resume"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Campaign Statistics",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/email-campaigns/{{campaignId}}/stats",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-campaigns", "{{campaignId}}", "stats"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Target Recipients",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/email-campaigns/{{campaignId}}/recipients",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-campaigns", "{{campaignId}}", "recipients"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Email Campaign",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/email-campaigns/{{campaignId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-campaigns", "{{campaignId}}"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "campaignId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

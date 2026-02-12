@@ -1,0 +1,280 @@
+{
+  "info": {
+    "_postman_id": "subscriptions-collection",
+    "name": "CRM - Subscriptions",
+    "description": "Subscription management endpoints for CRM System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Subscription",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"customer\": \"{{customerId}}\",\n    \"packageType\": \"premium\",\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-12-31\",\n    \"price\": 999,\n    \"paymentMethod\": \"card\",\n    \"autoRenew\": true,\n    \"notes\": \"Annual premium membership\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/subscriptions",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "subscriptions"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Subscriptions",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/subscriptions",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "subscriptions"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Subscription Stats",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/subscriptions/stats",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "subscriptions", "stats"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Active Subscriptions",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/subscriptions/active",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "subscriptions", "active"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Expiring Soon Subscriptions",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/subscriptions/expiring-soon",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "subscriptions", "expiring-soon"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Expired Subscriptions",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/subscriptions/expired",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "subscriptions", "expired"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Customer Subscriptions",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/subscriptions/customer/{{customerId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "subscriptions", "customer", "{{customerId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Subscription by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/subscriptions/{{subscriptionId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "subscriptions", "{{subscriptionId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Subscription",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"packageType\": \"vip\",\n    \"price\": 1499,\n    \"autoRenew\": false,\n    \"notes\": \"Updated to VIP package\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/subscriptions/{{subscriptionId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "subscriptions", "{{subscriptionId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Payment Status",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"paymentStatus\": \"paid\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/subscriptions/{{subscriptionId}}/payment-status",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "subscriptions", "{{subscriptionId}}", "payment-status"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Renew Subscription",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"newEndDate\": \"2025-12-31\",\n    \"price\": 999\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/subscriptions/{{subscriptionId}}/renew",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "subscriptions", "{{subscriptionId}}", "renew"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Subscription",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/subscriptions/{{subscriptionId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "subscriptions", "{{subscriptionId}}"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "customerId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "subscriptionId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
