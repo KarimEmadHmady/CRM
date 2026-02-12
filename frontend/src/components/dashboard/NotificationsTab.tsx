@@ -6,6 +6,9 @@ import { useNotifications } from '@/features/notifications/hooks/useNotification
 import { CreateNotificationModal } from '@/features/notifications/components/CreateNotificationModal';
 import { EditNotificationModal } from '@/features/notifications/components/EditNotificationModal';
 import { NotificationDetailsModal } from '@/features/notifications/components/NotificationDetailsModal';
+import { SubscriptionExpiryModal } from '@/features/notifications/components/SubscriptionExpiryModal';
+import { PaymentReminderModal } from '@/features/notifications/components/PaymentReminderModal';
+import { WelcomeNotificationModal } from '@/features/notifications/components/WelcomeNotificationModal';
 import { Notification, CreateNotificationData, UpdateNotificationData } from '@/features/notifications/types/notification.types';
  
 export function NotificationsTab() {
@@ -16,6 +19,9 @@ export function NotificationsTab() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showSubscriptionExpiryModal, setShowSubscriptionExpiryModal] = useState(false);
+  const [showPaymentReminderModal, setShowPaymentReminderModal] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [notificationToEdit, setNotificationToEdit] = useState<Notification | null>(null);
   const [notificationToView, setNotificationToView] = useState<Notification | null>(null);
   const [notificationToDelete, setNotificationToDelete] = useState<Notification | null>(null);
@@ -25,6 +31,7 @@ export function NotificationsTab() {
     loading,
     error,
     stats,
+    fetchNotifications,
     createNotification,
     updateNotification,
     deleteNotification,
@@ -32,6 +39,7 @@ export function NotificationsTab() {
     getPendingNotifications,
     createSubscriptionExpiryNotifications,
     createPaymentReminderNotifications,
+    createWelcomeNotification,
     clearError
   } = useNotifications();
  
@@ -133,19 +141,28 @@ export function NotificationsTab() {
     }
   };
  
-  const handleCreateSubscriptionExpiryNotifications = async () => {
+  const handleCreateSubscriptionExpiryNotifications = async (daysBefore: number) => {
     try {
-      await createSubscriptionExpiryNotifications();
+      await createSubscriptionExpiryNotifications(daysBefore);
       alert('Subscription expiry notifications created successfully!');
     } catch (error) {
       // Error is handled by the hook
     }
   };
- 
-  const handleCreatePaymentReminderNotifications = async () => {
+
+  const handleCreatePaymentReminderNotifications = async (daysBefore: number) => {
     try {
-      await createPaymentReminderNotifications();
+      await createPaymentReminderNotifications(daysBefore);
       alert('Payment reminder notifications created successfully!');
+    } catch (error) {
+      // Error is handled by the hook
+    }
+  };
+
+  const handleCreateWelcomeNotification = async (customerId: string, message: string) => {
+    try {
+      await createWelcomeNotification(customerId, message);
+      alert('Welcome notification sent successfully!');
     } catch (error) {
       // Error is handled by the hook
     }
@@ -295,16 +312,22 @@ export function NotificationsTab() {
           Pending Only
         </button>
         <button
-          onClick={handleCreateSubscriptionExpiryNotifications}
+          onClick={() => setShowSubscriptionExpiryModal(true)}
           className="px-3 py-1 text-sm bg-orange-100 text-orange-800 rounded-lg hover:bg-orange-200 transition-colors"
         >
           Create Expiry Notifications
         </button>
         <button
-          onClick={handleCreatePaymentReminderNotifications}
+          onClick={() => setShowPaymentReminderModal(true)}
           className="px-3 py-1 text-sm bg-purple-100 text-purple-800 rounded-lg hover:bg-purple-200 transition-colors"
         >
           Create Payment Reminders
+        </button>
+        <button
+          onClick={() => setShowWelcomeModal(true)}
+          className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors"
+        >
+          Send Welcome Message
         </button>
         <button
           onClick={() => {
@@ -312,6 +335,7 @@ export function NotificationsTab() {
             setSelectedType('all');
             setSelectedChannel('all');
             setSearchTerm('');
+            fetchNotifications();
           }}
           className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors"
         >
@@ -471,6 +495,30 @@ export function NotificationsTab() {
         onClose={() => setShowEditModal(false)}
         onSubmit={handleUpdateNotification}
         notification={notificationToEdit}
+        loading={loading}
+      />
+ 
+      {/* Welcome Notification Modal */}
+      <WelcomeNotificationModal
+        isOpen={showWelcomeModal}
+        onClose={() => setShowWelcomeModal(false)}
+        onSubmit={handleCreateWelcomeNotification}
+        loading={loading}
+      />
+ 
+      {/* Subscription Expiry Modal */}
+      <SubscriptionExpiryModal
+        isOpen={showSubscriptionExpiryModal}
+        onClose={() => setShowSubscriptionExpiryModal(false)}
+        onSubmit={handleCreateSubscriptionExpiryNotifications}
+        loading={loading}
+      />
+ 
+      {/* Payment Reminder Modal */}
+      <PaymentReminderModal
+        isOpen={showPaymentReminderModal}
+        onClose={() => setShowPaymentReminderModal(false)}
+        onSubmit={handleCreatePaymentReminderNotifications}
         loading={loading}
       />
  

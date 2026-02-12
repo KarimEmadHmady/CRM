@@ -123,25 +123,6 @@ export class SubscriptionService {
     }
 
     static async getSubscriptionStatsService() {
-        const stats = await Subscription.aggregate([
-            {
-                $group: {
-                    _id: '$paymentStatus',
-                    count: { $sum: 1 },
-                    totalRevenue: { $sum: '$price' }
-                }
-            }
-        ]);
-
-        const packageStats = await Subscription.aggregate([
-            {
-                $group: {
-                    _id: '$packageType',
-                    count: { $sum: 1 }
-                }
-            }
-        ]);
-
         const activeCount = await Subscription.countDocuments({ isActive: true });
         const expiredCount = await Subscription.countDocuments({ 
             $or: [
@@ -150,12 +131,36 @@ export class SubscriptionService {
             ]
         });
 
+        // Get expiring soon subscriptions (within 30 days)
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + 30);
+        const expiringSoonCount = await Subscription.countDocuments({
+            isActive: true,
+            endDate: { $lte: futureDate, $gte: new Date() }
+        });
+
+        // Calculate total revenue from paid subscriptions
+        const revenueStats = await Subscription.aggregate([
+            {
+                $match: { paymentStatus: 'paid' }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: '$price' }
+                }
+            }
+        ]);
+
+        const totalRevenue = revenueStats.length > 0 ? revenueStats[0].totalRevenue : 0;
+        const totalCount = await Subscription.countDocuments();
+
         return {
-            paymentStats: stats,
-            packageStats: packageStats,
-            activeCount,
-            expiredCount,
-            totalSubscriptions: await Subscription.countDocuments()
+            total: totalCount,
+            active: activeCount,
+            expired: expiredCount,
+            expiringSoon: expiringSoonCount,
+            totalRevenue: totalRevenue
         };
     }
 

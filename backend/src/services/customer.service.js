@@ -69,10 +69,33 @@ export class CustomerService {
             }
         ]);
 
+        // Calculate individual stats
+        const totalCustomers = await Customer.countDocuments();
+        const activeCustomers = await Customer.countDocuments({ status: 'active' });
+        const inactiveCustomers = await Customer.countDocuments({ status: 'inactive' });
+        const interestedCustomers = await Customer.countDocuments({ status: 'interested' });
+        const pendingCustomers = await Customer.countDocuments({ status: 'pending' });
+
+        // Calculate total spent (assuming customers have totalSpent field, otherwise 0)
+        const totalSpentResult = await Customer.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    totalSpent: { $sum: '$totalSpent' }
+                }
+            }
+        ]);
+        const totalSpent = totalSpentResult.length > 0 ? totalSpentResult[0].totalSpent : 0;
+
         return {
+            total: totalCustomers,
+            active: activeCustomers,
+            inactive: inactiveCustomers,
+            interested: interestedCustomers,
+            pending: pendingCustomers,
+            totalSpent: totalSpent,
             statusStats: stats,
-            categoryStats: categoryStats,
-            totalCustomers: await Customer.countDocuments()
+            categoryStats: categoryStats
         };
     }
 

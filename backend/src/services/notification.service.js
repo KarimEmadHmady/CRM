@@ -530,15 +530,17 @@ export class NotificationService {
             const totalNotifications = await Notification.countDocuments();
             const pendingCount = await Notification.countDocuments({ status: 'pending' });
             const sentCount = await Notification.countDocuments({ status: 'sent' });
+            const deliveredCount = await Notification.countDocuments({ status: 'delivered' });
             const failedCount = await Notification.countDocuments({ status: 'failed' });
 
             return {
+                total: totalNotifications,
+                pending: pendingCount,
+                sent: sentCount,
+                delivered: deliveredCount,
+                failed: failedCount,
                 statusStats: stats,
-                typeStats: typeStats,
-                totalNotifications,
-                pendingCount,
-                sentCount,
-                failedCount
+                typeStats: typeStats
             };
 
         } catch (error) {

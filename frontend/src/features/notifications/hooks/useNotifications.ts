@@ -148,11 +148,11 @@ export function useNotifications(initialFilters?: NotificationFilters) {
     }
   }, []);
 
-  const createSubscriptionExpiryNotifications = useCallback(async () => {
+  const createSubscriptionExpiryNotifications = useCallback(async (daysBefore: number = 3) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await notificationApi.createSubscriptionExpiryNotifications();
+      const response = await notificationApi.createSubscriptionExpiryNotifications(daysBefore);
       if (response.success) {
         await fetchNotifications();
         await fetchStats();
@@ -166,11 +166,11 @@ export function useNotifications(initialFilters?: NotificationFilters) {
     }
   }, [fetchNotifications, fetchStats]);
 
-  const createPaymentReminderNotifications = useCallback(async () => {
+  const createPaymentReminderNotifications = useCallback(async (daysBefore: number = 3) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await notificationApi.createPaymentReminderNotifications();
+      const response = await notificationApi.createPaymentReminderNotifications(daysBefore);
       if (response.success) {
         await fetchNotifications();
         await fetchStats();
@@ -184,11 +184,11 @@ export function useNotifications(initialFilters?: NotificationFilters) {
     }
   }, [fetchNotifications, fetchStats]);
 
-  const createWelcomeNotification = useCallback(async (customerId: string) => {
+  const createWelcomeNotification = useCallback(async (customerId: string, message?: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await notificationApi.createWelcomeNotification(customerId);
+      const response = await notificationApi.createWelcomeNotification(customerId, message);
       if (response.success) {
         setNotifications(prev => [response.data, ...prev]);
         await fetchStats();

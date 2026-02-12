@@ -20,9 +20,10 @@ import {
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useCustomers } from '@/features/customers/hooks/useCustomers';
 import { useEmailCampaigns } from '@/features/email-campaigns/hooks/useEmailCampaigns';
-// ❌ شيلنا الـ hooks دول لأنهم بيعملوا infinite loop
-// import { useNotifications } from '@/features/notifications/hooks/useNotifications';
-// import { useSubscriptions } from '@/features/subscriptions/hooks/useSubscriptions';
+import { customerApi } from '@/features/customers/api/customer.api';
+import { notificationApi } from '@/features/notifications/api/notification.api';
+import { subscriptionApi } from '@/features/subscriptions/api/subscription.api';
+import { emailCampaignApi } from '@/features/email-campaigns/api/emailCampaign.api';
 
 interface DashboardStats {
   users: {
@@ -63,7 +64,6 @@ export function DashboardOverview() {
     users: { total: 0, active: 0, newThisMonth: 0 },
     customers: { total: 0, active: 0, newThisMonth: 0, totalSpent: 0 },
     campaigns: { total: 0, active: 0, sentThisMonth: 0, totalSent: 0 },
-    // ✅ Mock data للـ notifications و subscriptions
     notifications: { total: 0, pending: 0, sent: 0, delivered: 0, failed: 0 },
     subscriptions: { total: 0, active: 0, expired: 0, expiringSoon: 0, totalRevenue: 0 }
   });
@@ -71,12 +71,10 @@ export function DashboardOverview() {
   const [loading, setLoading] = useState(true);
   const hasLoadedRef = useRef(false);
 
-  // ✅ نسيبنا الـ hooks دول لأنهم مش بيعملوا مشاكل
   const { user } = useAuth();
   const { customers, fetchCustomers } = useCustomers();
   const { campaigns } = useEmailCampaigns();
 
-  // ✅ Load data ONCE
   useEffect(() => {
     const loadDashboardData = async () => {
       if (hasLoadedRef.current) {
@@ -86,16 +84,79 @@ export function DashboardOverview() {
 
       try {
         setLoading(true);
-        console.log('📊 Loading dashboard data...');
+        console.log('📊 Loading dashboard data from real APIs...');
         
         hasLoadedRef.current = true;
 
-        // ✅ Fetch customers only
-        await fetchCustomers();
+        const [
+          customerStatsResponse,
+          notificationsResponse,
+          subscriptionStatsResponse,
+          emailCampaignsResponse,
+          notificationStatsResponse
+        ] = await Promise.all([
+          customerApi.getCustomerStats(),
+          notificationApi.getAllNotifications(),
+          subscriptionApi.getSubscriptionStats(),
+          emailCampaignApi.getAllEmailCampaigns(),
+          notificationApi.getNotificationStats()
+        ]);
 
-        console.log('✅ Dashboard data loaded successfully');
+        console.log('✅ API Responses:', {
+          customerStats: customerStatsResponse,
+          notifications: notificationsResponse,
+          subscriptionStats: subscriptionStatsResponse,
+          emailCampaigns: emailCampaignsResponse,
+          notificationStats: notificationStatsResponse
+        });
+
+        const customerStats = customerStatsResponse.data;
+        const subscriptionStats = subscriptionStatsResponse.data;
+        const campaignsData = emailCampaignsResponse.data || [];
+        const notificationStats = notificationStatsResponse.data;
+        const notificationsData = notificationsResponse.data;
+
+        const totalCampaigns = campaignsData.length || 0;
+        const activeCampaigns = campaignsData.filter((c: any) => c.status === 'active').length || 0;
+        const totalSent = campaignsData.reduce((sum: number, c: any) => sum + (c.statistics?.sentCount || 0), 0);
+
+        setStats({
+          users: {
+            total: user ? 1 : 0,
+            active: user?.isActive ? 1 : 0,
+            newThisMonth: 0
+          },
+          customers: {
+            total: customerStats?.total || 0,
+            active: customerStats?.active || 0,
+            newThisMonth: 0, // Not available from API stats, calculate if needed
+            totalSpent: customerStats?.totalSpent || 0
+          },
+          campaigns: {
+            total: totalCampaigns,
+            active: activeCampaigns,
+            sentThisMonth: 0,
+            totalSent: totalSent
+          },
+          notifications: {
+            total: notificationStats?.total || notificationsData?.length || 0,
+            pending: notificationStats?.pending || 0,
+            sent: notificationStats?.sent || 0,
+            delivered: notificationStats?.delivered || 0,
+            failed: notificationStats?.failed || 0
+          },
+          subscriptions: {
+            total: subscriptionStats?.total || 0,
+            active: subscriptionStats?.active || 0,
+            expired: subscriptionStats?.expired || 0,
+            expiringSoon: subscriptionStats?.expiringSoon || 0,
+            totalRevenue: subscriptionStats?.totalRevenue || 0
+          }
+        });
+
+        console.log('✅ Real dashboard stats calculated successfully');
       } catch (error) {
-        console.error('❌ Error loading dashboard data:', error);
+        console.error('❌ Error loading real dashboard data:', error);
         hasLoadedRef.current = false;
       } finally {
         setLoading(false);
@@ -103,72 +164,7 @@ export function DashboardOverview() {
     };
 
     loadDashboardData();
-  }, []);
-
-  // ✅ Calculate stats when data changes
-  useEffect(() => {
-    if (!hasLoadedRef.current) return;
-
-    console.log('🔄 Recalculating dashboard stats...');
-
-    try {
-      const currentMonth = new Date().getMonth();
-      const currentYear = new Date().getFullYear();
-
-      // Customer stats
-      const newCustomersThisMonth = customers.filter(customer => {
-        const createdDate = new Date(customer.createdAt);
-        return createdDate.getMonth() === currentMonth && createdDate.getFullYear() === currentYear;
-      }).length;
-
-      const activeCustomers = customers.filter(customer => customer.status === 'active').length;
-      const totalSpent = customers.reduce((sum, customer) => sum + (customer.totalSpent || 0), 0);
-
-      // Campaign stats
-      const totalCampaigns = campaigns?.length || 0;
-      const activeCampaigns = campaigns?.filter(c => c.status === 'active').length || 0;
-      const totalSent = campaigns?.reduce((sum, c) => sum + (c.sentCount || 0), 0) || 0;
-
-      setStats({
-        users: {
-          total: user ? 1 : 0,
-          active: user?.isActive ? 1 : 0,
-          newThisMonth: 0
-        },
-        customers: {
-          total: customers.length,
-          active: activeCustomers,
-          newThisMonth: newCustomersThisMonth,
-          totalSpent
-        },
-        campaigns: {
-          total: totalCampaigns,
-          active: activeCampaigns,
-          sentThisMonth: 0,
-          totalSent
-        },
-        // ✅ Mock data للـ notifications و subscriptions عشان الـ UI يشتغل
-        notifications: {
-          total: 25,
-          pending: 5,
-          sent: 12,
-          delivered: 6,
-          failed: 2
-        },
-        subscriptions: {
-          total: 45,
-          active: 35,
-          expired: 7,
-          expiringSoon: 3,
-          totalRevenue: 25000
-        }
-      });
-
-      console.log('✅ Stats calculated successfully');
-    } catch (error) {
-      console.error('❌ Error calculating stats:', error);
-    }
-  }, [user, customers, campaigns]); // ✅ شيلنا notifications و subscriptions من الـ deps
+  }, []); // Remove dependencies to prevent refetching
 
   if (loading) {
     return (
@@ -241,7 +237,7 @@ export function DashboardOverview() {
               <p className="text-2xl font-bold text-gray-900 mt-2">{stats.campaigns.total}</p>
               <div className="flex items-center mt-2">
                 <Send className="h-4 w-4 text-purple-500 mr-1" />
-                <span className="text-sm text-gray-600">{stats.campaigns.totalSent} sent</span>
+                <span className="text-sm text-gray-600">{stats.notifications.sent} sent</span>
               </div>
             </div>
             <div className="bg-purple-50 p-3 rounded-xl">
@@ -368,7 +364,7 @@ export function DashboardOverview() {
               <Activity className="h-5 w-5 text-blue-600" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">Dashboard loaded successfully</p>
+              <p className="text-sm font-medium text-gray-900">Dashboard loaded with real data</p>
               <p className="text-xs text-gray-500">Just now</p>
             </div>
           </div>

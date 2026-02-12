@@ -145,9 +145,9 @@ class NotificationApi {
     }
   }
 
-  async createSubscriptionExpiryNotifications(): Promise<{ success: boolean; message: string; data?: any }> {
+  async createSubscriptionExpiryNotifications(daysBefore: number = 3): Promise<{ success: boolean; message: string; data?: any }> {
     try {
-      const response = await axios.post(`${API_BASE_URL}/notifications/subscription-expiry`, {}, {
+      const response = await axios.post(`${API_BASE_URL}/notifications/subscription-expiry`, { daysBefore }, {
         headers: this.getAuthHeaders()
       });
       return response.data;
@@ -157,9 +157,9 @@ class NotificationApi {
     }
   }
 
-  async createPaymentReminderNotifications(): Promise<{ success: boolean; message: string; data?: any }> {
+  async createPaymentReminderNotifications(daysBefore: number = 3): Promise<{ success: boolean; message: string; data?: any }> {
     try {
-      const response = await axios.post(`${API_BASE_URL}/notifications/payment-reminders`, {}, {
+      const response = await axios.post(`${API_BASE_URL}/notifications/payment-reminders`, { daysBefore }, {
         headers: this.getAuthHeaders()
       });
       return response.data;
@@ -169,9 +169,10 @@ class NotificationApi {
     }
   }
 
-  async createWelcomeNotification(customerId: string): Promise<NotificationResponse> {
+  async createWelcomeNotification(customerId: string, message?: string): Promise<NotificationResponse> {
     try {
-      const response = await axios.post(`${API_BASE_URL}/notifications/customer/${customerId}/welcome`, {}, {
+      const payload = message ? { message } : {};
+      const response = await axios.post(`${API_BASE_URL}/notifications/customer/${customerId}/welcome`, payload, {
         headers: this.getAuthHeaders()
       });
       return response.data;
