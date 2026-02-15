@@ -169,6 +169,19 @@ class SubscriptionApi {
     }
   }
 
+  async bulkDeleteSubscriptions(subscriptionIds: string[]): Promise<{ success: boolean; data: any }> {
+    try {
+      const response = await axios.delete(`${API_BASE_URL}/subscriptions/bulk`, {
+        data: { subscriptionIds },
+        headers: this.getAuthHeaders()
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error bulk deleting subscriptions:', error);
+      throw error;
+    }
+  }
+
   async getSubscriptionStats(): Promise<SubscriptionStatsResponse> {
     try {
       const response = await axios.get(`${API_BASE_URL}/subscriptions/stats`, {

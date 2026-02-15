@@ -549,4 +549,47 @@ export class NotificationService {
         }
     }
 
+    /**
+     * ✅ Bulk delete notifications
+     */
+    static async bulkDeleteNotificationsService(notificationIds) {
+        try {
+            if (!Array.isArray(notificationIds) || notificationIds.length === 0) {
+                throw new Error('Invalid notification IDs array');
+            }
+
+            // Validate that all notifications exist (try both id and _id for backward compatibility)
+            let existingNotifications = await Notification.find({ id: { $in: notificationIds } });
+            if (existingNotifications.length !== notificationIds.length) {
+                // Try with _id if id didn't work
+                const notificationsById = await Notification.find({ _id: { $in: notificationIds } });
+                existingNotifications = [...existingNotifications, ...notificationsById];
+            }
+            
+            if (existingNotifications.length !== notificationIds.length) {
+                throw new Error('Some notifications not found');
+            }
+
+            // Delete notifications (try both id and _id)
+            let result;
+            const resultById = await Notification.deleteMany({ id: { $in: notificationIds } });
+            const resultBy_id = await Notification.deleteMany({ _id: { $in: notificationIds } });
+            
+            result = {
+                deletedCount: resultById.deletedCount + resultBy_id.deletedCount
+            };
+            
+            console.log(`✅ Bulk deleted ${result.deletedCount} notifications`);
+            return {
+                success: true,
+                deletedCount: result.deletedCount,
+                message: `Successfully deleted ${result.deletedCount} notifications`
+            };
+
+        } catch (error) {
+            console.error('❌ Error bulk deleting notifications:', error.message);
+            throw error;
+        }
+    }
+
 }

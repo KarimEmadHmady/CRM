@@ -148,4 +148,22 @@ export class NotificationController {
         }
     }
 
+    static async bulkDeleteNotificationsController(req, res, next) {
+        try {
+            const { notificationIds } = req.body;
+            
+            if (!notificationIds || !Array.isArray(notificationIds)) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: "notificationIds array is required" 
+                });
+            }
+
+            const result = await NotificationService.bulkDeleteNotificationsService(notificationIds);
+            res.status(200).json({ success: true, data: result });
+        } catch (error) {
+            next(error);
+        }
+    }
+
 }

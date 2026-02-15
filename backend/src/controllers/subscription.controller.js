@@ -165,4 +165,22 @@ export class SubscriptionController {
         }
     }
 
+    static async bulkDeleteSubscriptionsController(req, res, next) {
+        try {
+            const { subscriptionIds } = req.body;
+            
+            if (!subscriptionIds || !Array.isArray(subscriptionIds)) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: "subscriptionIds array is required" 
+                });
+            }
+
+            const result = await SubscriptionService.bulkDeleteSubscriptionsService(subscriptionIds);
+            res.status(200).json({ success: true, data: result });
+        } catch (error) {
+            next(error);
+        }
+    }
+
 }

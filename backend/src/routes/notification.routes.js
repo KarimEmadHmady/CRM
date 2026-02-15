@@ -16,6 +16,7 @@ router.post("/subscription-expiry", requirePermission('notification_write'), asy
 router.post("/payment-reminders", requirePermission('notification_write'), asyncHandler(NotificationController.createPaymentReminderNotificationsController));
 router.get("/customer/:customerId", requirePermission('notification_read'), asyncHandler(NotificationController.getNotificationsByCustomerController));
 router.post("/customer/:customerId/welcome", requirePermission('notification_write'), asyncHandler(NotificationController.createWelcomeNotificationController));
+router.delete("/bulk", requirePermission('notification_delete'), asyncHandler(NotificationController.bulkDeleteNotificationsController));
 router.get("/:id", requirePermission('notification_read'), asyncHandler(NotificationController.getNotificationByIdController));
 router.put("/:id", requirePermission('notification_write'), asyncHandler(NotificationController.updateNotificationController));
 router.post("/:id/send", requirePermission('notification_write'), asyncHandler(NotificationController.sendNotificationController));

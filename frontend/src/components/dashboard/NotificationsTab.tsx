@@ -1,7 +1,7 @@
 'use client';
  
 import { useState } from 'react';
-import { Search, Plus, Edit, Trash2, Eye, Send, Calendar, Filter, Bell, Mail, MessageSquare, Smartphone } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Eye, Send, Calendar, Filter, Bell, Mail, MessageSquare, Smartphone, CheckSquare } from 'lucide-react';
 import { useNotifications } from '@/features/notifications/hooks/useNotifications';
 import { CreateNotificationModal } from '@/features/notifications/components/CreateNotificationModal';
 import { EditNotificationModal } from '@/features/notifications/components/EditNotificationModal';
@@ -25,7 +25,10 @@ export function NotificationsTab() {
   const [notificationToEdit, setNotificationToEdit] = useState<Notification | null>(null);
   const [notificationToView, setNotificationToView] = useState<Notification | null>(null);
   const [notificationToDelete, setNotificationToDelete] = useState<Notification | null>(null);
- 
+  const [selectedNotifications, setSelectedNotifications] = useState<string[]>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
+
   const {
     notifications,
     loading,
@@ -35,6 +38,7 @@ export function NotificationsTab() {
     createNotification,
     updateNotification,
     deleteNotification,
+    bulkDeleteNotifications,
     sendNotification,
     getPendingNotifications,
     createSubscriptionExpiryNotifications,
@@ -42,15 +46,15 @@ export function NotificationsTab() {
     createWelcomeNotification,
     clearError
   } = useNotifications();
- 
+
   const statuses = ['all', 'pending', 'sent', 'delivered', 'failed'];
   const types = ['all', 'subscription_expiry', 'payment_reminder', 'welcome', 'custom'];
   const channels = ['all', 'email', 'sms', 'push', 'all'];
- 
+
   // Filter notifications based on current filters
   const getFilteredNotifications = () => {
     let filtered = [...notifications];
- 
+
     // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(notification => {
@@ -60,34 +64,34 @@ export function NotificationsTab() {
         const customerEmail = typeof notification.customer === 'string' 
           ? '' 
           : notification.customer?.email || '';
- 
+
         return customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                customerEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
                notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                notification.message.toLowerCase().includes(searchTerm.toLowerCase());
       });
     }
- 
+
     // Apply status filter
     if (selectedStatus !== 'all') {
       filtered = filtered.filter(notification => notification.status === selectedStatus);
     }
- 
+
     // Apply type filter
     if (selectedType !== 'all') {
       filtered = filtered.filter(notification => notification.type === selectedType);
     }
- 
+
     // Apply channel filter
     if (selectedChannel !== 'all') {
       filtered = filtered.filter(notification => notification.channel === selectedChannel);
     }
- 
+
     return filtered;
   };
- 
+
   const filteredNotifications = getFilteredNotifications();
- 
+
   const handleCreateNotification = async (notificationData: CreateNotificationData) => {
     try {
       await createNotification(notificationData);
@@ -95,7 +99,7 @@ export function NotificationsTab() {
       // Error is handled by the hook
     }
   };
- 
+
   const handleUpdateNotification = async (id: string, notificationData: UpdateNotificationData) => {
     try {
       await updateNotification(id, notificationData);
@@ -103,35 +107,34 @@ export function NotificationsTab() {
       // Error is handled by the hook
     }
   };
- 
+
   const handleEditNotification = (notification: Notification) => {
     setNotificationToEdit(notification);
     setShowEditModal(true);
   };
- 
+
   const handleViewNotification = (notification: Notification) => {
     setNotificationToView(notification);
     setShowDetailsModal(true);
   };
- 
+
   const handleDeleteNotification = (notification: Notification) => {
     setNotificationToDelete(notification);
-    if (confirm(`Are you sure you want to delete this notification "${notification.title}"?`)) {
-      confirmDeleteNotification();
-    }
+    setShowDeleteModal(true);
   };
- 
+
   const confirmDeleteNotification = async () => {
     if (notificationToDelete) {
       try {
         await deleteNotification(notificationToDelete._id);
         setNotificationToDelete(null);
+        setShowDeleteModal(false);
       } catch (error) {
         // Error is handled by the hook
       }
     }
   };
- 
+
   const handleSendNotification = async (notification: Notification) => {
     try {
       await sendNotification(notification._id);
@@ -140,7 +143,7 @@ export function NotificationsTab() {
       // Error is handled by the hook
     }
   };
- 
+
   const handleCreateSubscriptionExpiryNotifications = async (daysBefore: number) => {
     try {
       await createSubscriptionExpiryNotifications(daysBefore);
@@ -167,7 +170,35 @@ export function NotificationsTab() {
       // Error is handled by the hook
     }
   };
- 
+
+  const handleSelectNotification = (notificationId: string) => {
+    setSelectedNotifications(prev => 
+      prev.includes(notificationId)
+        ? prev.filter(id => id !== notificationId)
+        : [...prev, notificationId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    const allIds = filteredNotifications.map(notification => notification._id);
+    if (selectedNotifications.length === filteredNotifications.length) {
+      // If all are selected, unselect all
+      setSelectedNotifications([]);
+    } else {
+      // If not all are selected, select all
+      setSelectedNotifications(allIds);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedNotifications.length === 0) {
+      alert('Please select at least one notification to delete');
+      return;
+    }
+
+    setShowBulkDeleteModal(true);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'sent': return 'bg-blue-100 text-blue-800';
@@ -177,7 +208,7 @@ export function NotificationsTab() {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
- 
+
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'subscription_expiry': return 'bg-orange-100 text-orange-800';
@@ -187,7 +218,7 @@ export function NotificationsTab() {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
- 
+
   const getChannelIcon = (channel: string) => {
     switch (channel) {
       case 'email': return <Mail className="h-4 w-4" />;
@@ -197,7 +228,7 @@ export function NotificationsTab() {
       default: return <Mail className="h-4 w-4" />;
     }
   };
- 
+
   return (
     <div className="p-6">
       {/* Header */}
@@ -211,7 +242,7 @@ export function NotificationsTab() {
           <span>Add Notification</span>
         </button>
       </div>
- 
+
       {/* Error Message */}
       {error && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between">
@@ -226,7 +257,7 @@ export function NotificationsTab() {
           </button>
         </div>
       )}
- 
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white p-4 rounded-lg border border-gray-200">
@@ -252,7 +283,7 @@ export function NotificationsTab() {
           </div>
         </div>
       </div>
- 
+
       {/* Filters */}
       <div className="flex flex-col lg:flex-row gap-4 mb-6">
         <div className="flex-1 relative">
@@ -302,7 +333,7 @@ export function NotificationsTab() {
           ))}
         </select>
       </div>
- 
+
       {/* Quick Actions */}
       <div className="flex flex-wrap gap-2 mb-6">
         <button
@@ -341,14 +372,31 @@ export function NotificationsTab() {
         >
           Clear Filters
         </button>
+        {selectedNotifications.length > 0 && (
+          <button
+            onClick={handleBulkDelete}
+            className="px-3 py-1 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2 "
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete Selected ({selectedNotifications.length})
+          </button>
+        )}
       </div>
- 
+
       {/* Notifications Table */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
+                <th className="px-6 py-3 text-left">
+                  <input
+                    type="checkbox"
+                    onChange={handleSelectAll}
+                    checked={selectedNotifications.length === filteredNotifications.length && filteredNotifications.length > 0}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Customer
                 </th>
@@ -375,7 +423,7 @@ export function NotificationsTab() {
             <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
                     <div className="flex items-center justify-center space-x-2">
                       <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-gray-600" />
                       <span>Loading notifications...</span>
@@ -384,7 +432,7 @@ export function NotificationsTab() {
                 </tr>
               ) : filteredNotifications.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
                     <div className="flex flex-col items-center space-y-2">
                       <Bell className="h-12 w-12 text-gray-300" />
                       <p>No notifications found</p>
@@ -394,6 +442,14 @@ export function NotificationsTab() {
               ) : (
                 filteredNotifications.map((notification) => (
                   <tr key={notification._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedNotifications.includes(notification._id)}
+                        onChange={() => handleSelectNotification(notification._id)}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div className="text-sm font-medium text-gray-900">
@@ -480,7 +536,7 @@ export function NotificationsTab() {
           </table>
         </div>
       </div>
- 
+
       {/* Create Notification Modal */}
       <CreateNotificationModal
         isOpen={showCreateModal}
@@ -488,7 +544,7 @@ export function NotificationsTab() {
         onSubmit={handleCreateNotification}
         loading={loading}
       />
- 
+
       {/* Edit Notification Modal */}
       <EditNotificationModal
         isOpen={showEditModal}
@@ -497,7 +553,7 @@ export function NotificationsTab() {
         notification={notificationToEdit}
         loading={loading}
       />
- 
+
       {/* Welcome Notification Modal */}
       <WelcomeNotificationModal
         isOpen={showWelcomeModal}
@@ -505,7 +561,7 @@ export function NotificationsTab() {
         onSubmit={handleCreateWelcomeNotification}
         loading={loading}
       />
- 
+
       {/* Subscription Expiry Modal */}
       <SubscriptionExpiryModal
         isOpen={showSubscriptionExpiryModal}
@@ -513,7 +569,7 @@ export function NotificationsTab() {
         onSubmit={handleCreateSubscriptionExpiryNotifications}
         loading={loading}
       />
- 
+
       {/* Payment Reminder Modal */}
       <PaymentReminderModal
         isOpen={showPaymentReminderModal}
@@ -521,7 +577,7 @@ export function NotificationsTab() {
         onSubmit={handleCreatePaymentReminderNotifications}
         loading={loading}
       />
- 
+
       {/* Notification Details Modal */}
       <NotificationDetailsModal
         isOpen={showDetailsModal}
@@ -531,6 +587,68 @@ export function NotificationsTab() {
         onSend={handleSendNotification}
         onDelete={handleDeleteNotification}
       />
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && notificationToDelete && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Delete Notification</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this notification "{notificationToDelete.title}"?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setNotificationToDelete(null);
+                }}
+                className="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteNotification}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Delete Confirmation Modal */}
+      {showBulkDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Bulk Delete Notifications</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete {selectedNotifications.length} notification(s)?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowBulkDeleteModal(false)}
+                className="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await bulkDeleteNotifications(selectedNotifications);
+                    setShowBulkDeleteModal(false);
+                  } catch (error) {
+                    // Error is handled by the hook
+                  }
+                }}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
+                Delete All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

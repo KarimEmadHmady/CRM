@@ -206,6 +206,26 @@ export function useNotifications(initialFilters?: NotificationFilters) {
     setError(null);
   }, []);
 
+  const bulkDeleteNotifications = useCallback(async (notificationIds: string[]) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await notificationApi.bulkDeleteNotifications(notificationIds);
+      if (response.success) {
+        setNotifications(prev => 
+          prev.filter(notification => !notificationIds.includes(notification._id))
+        );
+        await fetchStats();
+        return response.data;
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to bulk delete notifications');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchStats]);
+
   const updateFilters = useCallback((newFilters: NotificationFilters) => {
     setFilters(newFilters);
     fetchNotifications(newFilters);
@@ -227,6 +247,7 @@ export function useNotifications(initialFilters?: NotificationFilters) {
     createNotification,
     updateNotification,
     deleteNotification,
+    bulkDeleteNotifications,
     sendNotification,
     getPendingNotifications,
     getNotificationsByCustomer,

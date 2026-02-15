@@ -15,6 +15,7 @@ router.get("/active", requirePermission('subscription_read'), asyncHandler(Subsc
 router.get("/expiring-soon", requirePermission('subscription_read'), asyncHandler(SubscriptionController.getExpiringSoonController));
 router.get("/expired", requirePermission('subscription_read'), asyncHandler(SubscriptionController.getExpiredSubscriptionsController));
 router.get("/customer/:customerId", requirePermission('subscription_read'), asyncHandler(SubscriptionController.getSubscriptionsByCustomerController));
+router.delete("/bulk", requirePermission('subscription_delete'), asyncHandler(SubscriptionController.bulkDeleteSubscriptionsController));
 router.get("/:id", requirePermission('subscription_read'), asyncHandler(SubscriptionController.getSubscriptionByIdController));
 router.put("/:id", requirePermission('subscription_write'), asyncHandler(SubscriptionController.updateSubscriptionController));
 router.patch("/:id/payment-status", requirePermission('subscription_write'), asyncHandler(SubscriptionController.updatePaymentStatusController));

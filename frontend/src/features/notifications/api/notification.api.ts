@@ -181,6 +181,19 @@ class NotificationApi {
       throw error;
     }
   }
+
+  async bulkDeleteNotifications(notificationIds: string[]): Promise<{ success: boolean; data: any }> {
+    try {
+      const response = await axios.delete(`${API_BASE_URL}/notifications/bulk`, {
+        data: { notificationIds },
+        headers: this.getAuthHeaders()
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error bulk deleting notifications:', error);
+      throw error;
+    }
+  }
 }
 
 export const notificationApi = new NotificationApi();

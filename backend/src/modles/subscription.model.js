@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
+import { v4 as uuid } from "uuid";
 
 const subscriptionSchema = new mongoose.Schema(
     {
+        id: { type: String, required: true, unique: true, default: () => uuid() },
         customer: { 
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'Customer', 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Plus, Edit, Trash2, Eye, CreditCard, RefreshCw, Calendar, Filter } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Eye, CreditCard, RefreshCw, Calendar, Filter, CheckSquare } from 'lucide-react';
 import { useSubscriptions } from '@/features/subscriptions/hooks/useSubscriptions';
 import { CreateSubscriptionModal } from '@/features/subscriptions/components/CreateSubscriptionModal';
 import { EditSubscriptionModal } from '@/features/subscriptions/components/EditSubscriptionModal';
@@ -24,6 +24,9 @@ export function SubscriptionsTab() {
   const [subscriptionToDelete, setSubscriptionToDelete] = useState<Subscription | null>(null);
   const [subscriptionToRenew, setSubscriptionToRenew] = useState<Subscription | null>(null);
   const [newPaymentStatus, setNewPaymentStatus] = useState('pending');
+  const [selectedSubscriptions, setSelectedSubscriptions] = useState<string[]>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
 
   const {
     subscriptions,
@@ -33,6 +36,7 @@ export function SubscriptionsTab() {
     createSubscription,
     updateSubscription,
     deleteSubscription,
+    bulkDeleteSubscriptions,
     updatePaymentStatus,
     renewSubscription,
     getActiveSubscriptions,
@@ -124,9 +128,7 @@ export function SubscriptionsTab() {
 
   const handleDeleteSubscription = (subscription: Subscription) => {
     setSubscriptionToDelete(subscription);
-    if (confirm(`Are you sure you want to delete this subscription for ${typeof subscription.customer === 'string' ? subscription.customer : subscription.customer?.name}?`)) {
-      confirmDeleteSubscription();
-    }
+    setShowDeleteModal(true);
   };
 
   const confirmDeleteSubscription = async () => {
@@ -134,6 +136,7 @@ export function SubscriptionsTab() {
       try {
         await deleteSubscription(subscriptionToDelete._id);
         setSubscriptionToDelete(null);
+        setShowDeleteModal(false);
       } catch (error) {
         // Error is handled by the hook
       }
@@ -173,6 +176,34 @@ export function SubscriptionsTab() {
         // Error is handled by the hook
       }
     }
+  };
+
+  const handleSelectSubscription = (subscriptionId: string) => {
+    setSelectedSubscriptions(prev => 
+      prev.includes(subscriptionId) 
+        ? prev.filter(id => id !== subscriptionId)
+        : [...prev, subscriptionId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    const allIds = filteredSubscriptions.map(sub => sub._id);
+    if (selectedSubscriptions.length === filteredSubscriptions.length) {
+      // If all are selected, unselect all
+      setSelectedSubscriptions([]);
+    } else {
+      // If not all are selected, select all
+      setSelectedSubscriptions(allIds);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedSubscriptions.length === 0) {
+      alert('Please select at least one subscription to delete');
+      return;
+    }
+
+    setShowBulkDeleteModal(true);
   };
 
   const getPackageColor = (packageType: string) => {
@@ -340,6 +371,15 @@ export function SubscriptionsTab() {
         >
           Clear Filters
         </button>
+        {selectedSubscriptions.length > 0 && (
+          <button
+            onClick={handleBulkDelete}
+            className="px-3 py-1 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete Selected ({selectedSubscriptions.length})
+          </button>
+        )}
       </div>
 
       {/* Subscriptions Table */}
@@ -348,6 +388,14 @@ export function SubscriptionsTab() {
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
+                <th className="px-6 py-3 text-left">
+                  <input
+                    type="checkbox"
+                    onChange={handleSelectAll}
+                    checked={selectedSubscriptions.length === filteredSubscriptions.length && filteredSubscriptions.length > 0}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Customer
                 </th>
@@ -374,16 +422,16 @@ export function SubscriptionsTab() {
             <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
                     <div className="flex items-center justify-center space-x-2">
-                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-gray-600" />
+                      <RefreshCw className="h-6 w-6 animate-spin" />
                       <span>Loading subscriptions...</span>
                     </div>
                   </td>
                 </tr>
               ) : filteredSubscriptions.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
                     <div className="flex flex-col items-center space-y-2">
                       <CreditCard className="h-12 w-12 text-gray-300" />
                       <p>No subscriptions found</p>
@@ -393,6 +441,14 @@ export function SubscriptionsTab() {
               ) : (
                 filteredSubscriptions.map((subscription) => (
                   <tr key={subscription._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedSubscriptions.includes(subscription._id)}
+                        onChange={() => handleSelectSubscription(subscription._id)}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div className="text-sm font-medium text-gray-900">
@@ -563,6 +619,68 @@ export function SubscriptionsTab() {
                 className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
               >
                 Update Status
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && subscriptionToDelete && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Delete Subscription</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this subscription for {typeof subscriptionToDelete.customer === 'string' ? subscriptionToDelete.customer : subscriptionToDelete.customer?.name}?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setSubscriptionToDelete(null);
+                }}
+                className="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteSubscription}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Delete Confirmation Modal */}
+      {showBulkDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Bulk Delete Subscriptions</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete {selectedSubscriptions.length} subscription(s)?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowBulkDeleteModal(false)}
+                className="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await bulkDeleteSubscriptions(selectedSubscriptions);
+                    setShowBulkDeleteModal(false);
+                  } catch (error) {
+                    // Error is handled by the hook
+                  }
+                }}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
+                Delete All
               </button>
             </div>
           </div>

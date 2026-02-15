@@ -167,4 +167,54 @@ export class SubscriptionService {
         };
     }
 
+    /**
+     * ✅ Bulk delete subscriptions
+     */
+    static async bulkDeleteSubscriptionsService(subscriptionIds) {
+        try {
+            if (!Array.isArray(subscriptionIds) || subscriptionIds.length === 0) {
+                throw new Error('Invalid subscription IDs array');
+            }
+
+            // Validate that all subscriptions exist (try both id and _id for backward compatibility)
+            let existingSubscriptions = await Subscription.find({ id: { $in: subscriptionIds } });
+            if (existingSubscriptions.length !== subscriptionIds.length) {
+                // Try with _id if id didn't work
+                const subscriptionsById = await Subscription.find({ _id: { $in: subscriptionIds } });
+                existingSubscriptions = [...existingSubscriptions, ...subscriptionsById];
+            }
+            
+            if (existingSubscriptions.length !== subscriptionIds.length) {
+                throw new Error('Some subscriptions not found');
+            }
+
+            // Update customer status back to interested for each subscription being deleted
+            const customerIds = existingSubscriptions.map(sub => sub.customer);
+            await Customer.updateMany(
+                { _id: { $in: customerIds } },
+                { status: 'interested' }
+            );
+
+            // Delete subscriptions (try both id and _id)
+            let result;
+            const resultById = await Subscription.deleteMany({ id: { $in: subscriptionIds } });
+            const resultBy_id = await Subscription.deleteMany({ _id: { $in: subscriptionIds } });
+            
+            result = {
+                deletedCount: resultById.deletedCount + resultBy_id.deletedCount
+            };
+            
+            console.log(`✅ Bulk deleted ${result.deletedCount} subscriptions`);
+            return {
+                success: true,
+                deletedCount: result.deletedCount,
+                message: `Successfully deleted ${result.deletedCount} subscriptions`
+            };
+
+        } catch (error) {
+            console.error('❌ Error bulk deleting subscriptions:', error.message);
+            throw error;
+        }
+    }
+
 }

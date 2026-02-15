@@ -187,6 +187,26 @@ export function useSubscriptions(initialFilters?: SubscriptionFilters) {
     setError(null);
   }, []);
 
+  const bulkDeleteSubscriptions = useCallback(async (subscriptionIds: string[]) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await subscriptionApi.bulkDeleteSubscriptions(subscriptionIds);
+      if (response.success) {
+        setSubscriptions(prev => 
+          prev.filter(sub => !subscriptionIds.includes(sub._id))
+        );
+        await fetchStats();
+        return response.data;
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to bulk delete subscriptions');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchStats]);
+
   const updateFilters = useCallback((newFilters: SubscriptionFilters) => {
     setFilters(newFilters);
     fetchSubscriptions(newFilters);
@@ -208,6 +228,7 @@ export function useSubscriptions(initialFilters?: SubscriptionFilters) {
     createSubscription,
     updateSubscription,
     deleteSubscription,
+    bulkDeleteSubscriptions,
     updatePaymentStatus,
     renewSubscription,
     getActiveSubscriptions,
