@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { RegisterData } from '../types/auth.types';
 import { validateEmail, validatePassword } from '../utils/auth.utils';
-import { User, Mail, Lock, Eye, EyeOff, Check, X } from 'lucide-react';
+import { Check} from 'lucide-react';
 
 interface RegisterUserProps {
   onClose?: () => void;
@@ -77,7 +77,7 @@ export const RegisterUser = ({ onClose }: RegisterUserProps) => {
     try {
       const registerData: RegisterData = {
         ...formData,
-        role: isAdmin ? 'admin' : 'user'
+        role: isAdmin ? 'admin' : 'staff'
       };
       await register(registerData);
       
@@ -256,7 +256,7 @@ export const RegisterUser = ({ onClose }: RegisterUserProps) => {
                 </div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">User Registered Successfully!</h3>
                 <p className="text-sm text-gray-600">
-                  {isAdmin ? 'Admin account has been created successfully.' : 'User account has been created successfully.'}
+                  {isAdmin ? 'Admin account has been created successfully.' : 'Staff account has been created successfully.'}
                 </p>
               </div>
             </div>

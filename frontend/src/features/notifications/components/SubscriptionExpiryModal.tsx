@@ -27,7 +27,7 @@ export function SubscriptionExpiryModal({ isOpen, onClose, onSubmit, loading }: 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
@@ -53,7 +53,7 @@ export function SubscriptionExpiryModal({ isOpen, onClose, onSubmit, loading }: 
               max="30"
               value={daysBefore}
               onChange={(e) => setDaysBefore(parseInt(e.target.value) || 3)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full px-3 py-2 text-gray-600 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               placeholder="Enter number of days before expiry"
             />
             <p className="text-sm text-gray-500 mt-1">

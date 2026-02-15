@@ -81,20 +81,23 @@ export class SubscriptionService {
     }
 
     static async updatePaymentStatusService(id, paymentStatus, lastPaymentDate = new Date()) {
-        const subscription = await Subscription.findByIdAndUpdate(
-            id, 
-            { paymentStatus, lastPaymentDate }, 
-            { new: true }
-        ).populate('customer');
+        const subscription = await Subscription.findById(id).populate('customer');
+        
+        if (!subscription) throw new Error('Subscription not found');
+
+        // Update subscription fields
+        subscription.paymentStatus = paymentStatus;
+        subscription.lastPaymentDate = lastPaymentDate;
+
+        // Save to trigger middleware
+        await subscription.save();
 
         // Update customer status based on subscription
-        if (subscription) {
-            const isExpired = subscription.endDate < new Date();
-            if (isExpired && subscription.isActive) {
-                await Customer.findByIdAndUpdate(subscription.customer._id, { status: 'expired' });
-            } else if (!isExpired && paymentStatus === 'paid') {
-                await Customer.findByIdAndUpdate(subscription.customer._id, { status: 'subscribed' });
-            }
+        const isExpired = subscription.endDate < new Date();
+        if (isExpired && subscription.isActive) {
+            await Customer.findByIdAndUpdate(subscription.customer._id, { status: 'expired' });
+        } else if (!isExpired && paymentStatus === 'paid') {
+            await Customer.findByIdAndUpdate(subscription.customer._id, { status: 'subscribed' });
         }
 
         return subscription;

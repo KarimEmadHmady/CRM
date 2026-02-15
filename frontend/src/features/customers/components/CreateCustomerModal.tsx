@@ -13,7 +13,8 @@ interface CreateCustomerModalProps {
 
 const categories = [
   'restaurant',
-  'gym'
+  'gym',
+  'other'
 ];
 
 export function CreateCustomerModal({ isOpen, onClose, onSubmit, loading = false }: CreateCustomerModalProps) {

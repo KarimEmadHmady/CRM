@@ -34,6 +34,47 @@ const subscriptionSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+// Update customer's totalSpent when subscription payment status changes to 'paid'
+subscriptionSchema.post(['save', 'update'], async function() {
+    if (this.paymentStatus === 'paid') {
+        try {
+            const Customer = mongoose.model('Customer');
+            const paidSubscriptions = await mongoose.model('Subscription').find({
+                customer: this.customer,
+                paymentStatus: 'paid'
+            });
+            
+            const totalSpent = paidSubscriptions.reduce((sum, sub) => sum + sub.price, 0);
+            
+            await Customer.findByIdAndUpdate(this.customer, { totalSpent });
+            console.log(`Updated customer ${this.customer} totalSpent to ${totalSpent}`);
+        } catch (error) {
+            console.error('Error updating customer totalSpent:', error);
+        }
+    }
+});
+
+// Update customer's totalSpent when subscription is deleted
+subscriptionSchema.post(['deleteOne', 'deleteMany'], async function() {
+    // For deleteOne, get the customer from the document being deleted
+    if (this.paymentStatus === 'paid') {
+        try {
+            const Customer = mongoose.model('Customer');
+            const paidSubscriptions = await mongoose.model('Subscription').find({
+                customer: this.customer,
+                paymentStatus: 'paid'
+            });
+            
+            const totalSpent = paidSubscriptions.reduce((sum, sub) => sum + sub.price, 0);
+            
+            await Customer.findByIdAndUpdate(this.customer, { totalSpent });
+            console.log(`Updated customer ${this.customer} totalSpent after deletion to ${totalSpent}`);
+        } catch (error) {
+            console.error('Error updating customer totalSpent after deletion:', error);
+        }
+    }
+});
+
 subscriptionSchema.virtual('daysUntilExpiry').get(function() {
     if (!this.endDate) return null;
     const today = new Date();

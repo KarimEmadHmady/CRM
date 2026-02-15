@@ -4,12 +4,13 @@ export interface Customer {
   email: string;
   phone: string;
   address: string;
-  category: string;
-  status: 'interested' | 'active' | 'inactive' | 'pending';
+  category: 'gym' | 'restaurant' | 'other';
+  status: 'interested' | 'not_interested' | 'subscribed' | 'expired';
   notes: string;
   totalSpent: number;
   createdAt: string;
   updatedAt: string;
+  lastContactDate?: string;
   __v: number;
 }
 
@@ -18,12 +19,12 @@ export interface CreateCustomerRequest {
   email: string;
   phone: string;
   address: string;
-  category: string;
+  category: 'gym' | 'restaurant' | 'other';
   notes: string;
 }
 
 export interface UpdateCustomerRequest extends Partial<CreateCustomerRequest> {
-  status?: 'interested' | 'active' | 'inactive' | 'pending';
+  status?: 'interested' | 'not_interested' | 'subscribed' | 'expired';
 }
 
 export interface CustomerResponse {
@@ -40,10 +41,10 @@ export interface CustomerStatsResponse {
   success: boolean;
   data: {
     total: number;
-    active: number;
-    inactive: number;
+    subscribed: number;
+    expired: number;
     interested: number;
-    pending: number;
+    notInterested: number;
     totalSpent: number;
   };
 }

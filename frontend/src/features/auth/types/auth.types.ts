@@ -2,7 +2,7 @@ export interface User {
   _id: string;
   username: string;
   email: string;
-  role: 'admin' | 'user';
+  role: 'admin' | 'manager' | 'staff';
   isActive: boolean;
   permissions: string[];
   createdAt: string;
@@ -20,7 +20,7 @@ export interface RegisterData {
   email: string;
   password: string;
   confirmPassword: string;
-  role?: 'admin' | 'user';
+  role?: 'admin' | 'manager' | 'staff';
 }
 
 export interface AuthResponse {

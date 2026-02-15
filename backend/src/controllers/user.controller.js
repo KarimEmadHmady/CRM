@@ -103,6 +103,13 @@ export class UserController {
                         'email_campaign_read', 'email_campaign_write', 'email_campaign_delete',
                         'stats_view', 'user_management'
                     ];
+                } else if (role === 'manager') {
+                    userPermissions = [
+                        'customer_read', 'customer_write', 'customer_delete',
+                        'subscription_read', 'subscription_write', 'subscription_delete',
+                        'notification_read', 'notification_write', 'notification_delete',
+                        'stats_view'
+                    ];
                 } else {
                     userPermissions = ['customer_read', 'subscription_read'];
                 }
@@ -324,8 +331,11 @@ export class UserController {
                         admins: {
                             $sum: { $cond: [{ $eq: ['$role', 'admin'] }, 1, 0] }
                         },
-                        users: {
-                            $sum: { $cond: [{ $eq: ['$role', 'user'] }, 1, 0] }
+                        managers: {
+                            $sum: { $cond: [{ $eq: ['$role', 'manager'] }, 1, 0] }
+                        },
+                        staff: {
+                            $sum: { $cond: [{ $eq: ['$role', 'staff'] }, 1, 0] }
                         }
                     }
                 }
@@ -336,7 +346,8 @@ export class UserController {
                 active: 0,
                 inactive: 0,
                 admins: 0,
-                users: 0
+                managers: 0,
+                staff: 0
             };
 
             res.status(200).json({ 

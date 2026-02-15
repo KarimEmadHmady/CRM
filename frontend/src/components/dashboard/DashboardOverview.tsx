@@ -24,6 +24,7 @@ import { customerApi } from '@/features/customers/api/customer.api';
 import { notificationApi } from '@/features/notifications/api/notification.api';
 import { subscriptionApi } from '@/features/subscriptions/api/subscription.api';
 import { emailCampaignApi } from '@/features/email-campaigns/api/emailCampaign.api';
+import { usersApi } from '@/features/auth/api/users.api';
 
 interface DashboardStats {
   users: {
@@ -33,8 +34,10 @@ interface DashboardStats {
   };
   customers: {
     total: number;
-    active: number;
-    newThisMonth: number;
+    subscribed: number;
+    interested: number;
+    expired: number;
+    notInterested: number;
     totalSpent: number;
   };
   campaigns: {
@@ -59,21 +62,139 @@ interface DashboardStats {
   };
 }
 
+interface ActivityItem {
+  id: string;
+  type: 'customer' | 'notification' | 'subscription' | 'campaign' | 'user';
+  title: string;
+  description: string;
+  timestamp: Date;
+  icon: string;
+  color: string;
+}
+
 export function DashboardOverview() {
   const [stats, setStats] = useState<DashboardStats>({
     users: { total: 0, active: 0, newThisMonth: 0 },
-    customers: { total: 0, active: 0, newThisMonth: 0, totalSpent: 0 },
+    customers: { total: 0, subscribed: 0, interested: 0, expired: 0, notInterested: 0, totalSpent: 0 },
     campaigns: { total: 0, active: 0, sentThisMonth: 0, totalSent: 0 },
     notifications: { total: 0, pending: 0, sent: 0, delivered: 0, failed: 0 },
     subscriptions: { total: 0, active: 0, expired: 0, expiringSoon: 0, totalRevenue: 0 }
   });
 
+  const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
   const hasLoadedRef = useRef(false);
 
   const { user } = useAuth();
   const { customers, fetchCustomers } = useCustomers();
   const { campaigns } = useEmailCampaigns();
+
+  // Utility function to format time ago
+  const formatTimeAgo = (date: Date): string => {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) {
+      return 'Just now';
+    } else if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else {
+      const days = Math.floor(diffInSeconds / 86400);
+      return `${days} day${days > 1 ? 's' : ''} ago`;
+    }
+  };
+
+  // Function to generate activities from real data
+  const generateActivities = (
+    notificationsData: any[],
+    campaignsData: any[],
+    usersData: any[],
+    customerStats: any,
+    subscriptionStats: any
+  ): ActivityItem[] => {
+    const activities: ActivityItem[] = [];
+    const now = new Date();
+
+    // Add recent notifications as activities
+    const recentNotifications = (notificationsData || [])
+      .filter((n: any) => n.createdAt && new Date(n.createdAt) > new Date(now.getTime() - 24 * 60 * 60 * 1000))
+      .slice(0, 3);
+
+    recentNotifications.forEach((notification: any) => {
+      activities.push({
+        id: `notification-${notification._id}`,
+        type: 'notification',
+        title: `Notification ${notification.status}`,
+        description: `${notification.type} notification ${notification.status === 'sent' ? 'sent to' : 'for'} ${notification.customer?.email || 'customer'}`,
+        timestamp: new Date(notification.createdAt),
+        icon: 'Bell',
+        color: notification.status === 'sent' ? 'green' : notification.status === 'pending' ? 'yellow' : 'red'
+      });
+    });
+
+    // Add recent campaigns as activities
+    const recentCampaigns = (campaignsData || [])
+      .filter((c: any) => c.createdAt && new Date(c.createdAt) > new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000))
+      .slice(0, 2);
+
+    recentCampaigns.forEach((campaign: any) => {
+      activities.push({
+        id: `campaign-${campaign._id}`,
+        type: 'campaign',
+        title: `Email Campaign "${campaign.name}"`,
+        description: `Campaign ${campaign.status} with ${campaign.statistics?.sentCount || 0} emails sent`,
+        timestamp: new Date(campaign.createdAt),
+        icon: 'Mail',
+        color: campaign.status === 'active' ? 'blue' : 'gray'
+      });
+    });
+
+    // Add subscription summary as activity
+    if (subscriptionStats?.expiringSoon > 0) {
+      activities.push({
+        id: 'subscription-expiring',
+        type: 'subscription',
+        title: 'Subscriptions Expiring Soon',
+        description: `${subscriptionStats.expiringSoon} subscriptions need attention`,
+        timestamp: new Date(now.getTime() - 2 * 60 * 60 * 1000), // 2 hours ago
+        icon: 'AlertCircle',
+        color: 'orange'
+      });
+    }
+
+    // Add customer summary as activity
+    if (customerStats?.subscribed > 0) {
+      activities.push({
+        id: 'customer-summary',
+        type: 'customer',
+        title: 'Customer Activity',
+        description: `${customerStats.subscribed} subscribed customers this period`,
+        timestamp: new Date(now.getTime() - 4 * 60 * 60 * 1000), // 4 hours ago
+        icon: 'Target',
+        color: 'blue'
+      });
+    }
+
+    // Add system status
+    activities.push({
+      id: 'system-status',
+      type: 'user',
+      title: 'System Status',
+      description: `All systems operational with ${usersData?.length || 0} active users`,
+      timestamp: new Date(now.getTime() - 30 * 60 * 1000), // 30 minutes ago
+      icon: 'CheckCircle',
+      color: 'green'
+    });
+
+    // Sort by timestamp (most recent first) and limit to 6 items
+    return activities
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+      .slice(0, 6);
+  };
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -93,43 +214,52 @@ export function DashboardOverview() {
           notificationsResponse,
           subscriptionStatsResponse,
           emailCampaignsResponse,
-          notificationStatsResponse
+          notificationStatsResponse,
+          usersResponse
         ] = await Promise.all([
           customerApi.getCustomerStats(),
           notificationApi.getAllNotifications(),
           subscriptionApi.getSubscriptionStats(),
           emailCampaignApi.getAllEmailCampaigns(),
-          notificationApi.getNotificationStats()
+          notificationApi.getNotificationStats(),
+          usersApi.getAllUsers()
         ]);
 
-        console.log('✅ API Responses:', {
-          customerStats: customerStatsResponse,
-          notifications: notificationsResponse,
-          subscriptionStats: subscriptionStatsResponse,
-          emailCampaigns: emailCampaignsResponse,
-          notificationStats: notificationStatsResponse
-        });
 
         const customerStats = customerStatsResponse.data;
         const subscriptionStats = subscriptionStatsResponse.data;
         const campaignsData = emailCampaignsResponse.data || [];
         const notificationStats = notificationStatsResponse.data;
         const notificationsData = notificationsResponse.data;
+        const usersData = Array.isArray(usersResponse) ? usersResponse : [];
 
         const totalCampaigns = campaignsData.length || 0;
         const activeCampaigns = campaignsData.filter((c: any) => c.status === 'active').length || 0;
         const totalSent = campaignsData.reduce((sum: number, c: any) => sum + (c.statistics?.sentCount || 0), 0);
+        const totalUsers = usersData.length;
+        const activeUsers = usersData.filter((u: any) => u.isActive).length;
+
+        // Generate activities from real data
+        const generatedActivities = generateActivities(
+          notificationsData,
+          campaignsData,
+          usersData,
+          customerStats,
+          subscriptionStats
+        );
 
         setStats({
           users: {
-            total: user ? 1 : 0,
-            active: user?.isActive ? 1 : 0,
+            total: totalUsers,
+            active: activeUsers,
             newThisMonth: 0
           },
           customers: {
             total: customerStats?.total || 0,
-            active: customerStats?.active || 0,
-            newThisMonth: 0, // Not available from API stats, calculate if needed
+            subscribed: customerStats?.subscribed || 0,
+            interested: customerStats?.interested || 0,
+            expired: customerStats?.expired || 0,
+            notInterested: customerStats?.notInterested || 0,
             totalSpent: customerStats?.totalSpent || 0
           },
           campaigns: {
@@ -153,6 +283,8 @@ export function DashboardOverview() {
             totalRevenue: subscriptionStats?.totalRevenue || 0
           }
         });
+
+        setActivities(generatedActivities);
 
         console.log('✅ Real dashboard stats calculated successfully');
       } catch (error) {
@@ -220,7 +352,7 @@ export function DashboardOverview() {
               <p className="text-2xl font-bold text-gray-900 mt-2">{stats.customers.total}</p>
               <div className="flex items-center mt-2">
                 <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                <span className="text-sm text-green-600">+{stats.customers.newThisMonth} this month</span>
+                <span className="text-sm text-green-600">{stats.customers.subscribed} subscribed</span>
               </div>
             </div>
             <div className="bg-green-50 p-3 rounded-xl">
@@ -281,7 +413,7 @@ export function DashboardOverview() {
         </div>
       </div>
 
-      {/* Detailed Stats */}
+{/* Detailed Stats */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Customer & Subscription Stats */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -291,8 +423,20 @@ export function DashboardOverview() {
           </h3>
           <div className="space-y-4">
             <div className="flex justify-between items-center pb-3 border-b border-gray-100">
-              <span className="text-sm text-gray-600">Active Customers</span>
-              <span className="font-semibold text-gray-900">{stats.customers.active}</span>
+              <span className="text-sm text-gray-600">Subscribed Customers</span>
+              <span className="font-semibold text-gray-900">{stats.customers.subscribed}</span>
+            </div>
+            <div className="flex justify-between items-center pb-3 border-b border-gray-100">
+              <span className="text-sm text-gray-600">Interested Customers</span>
+              <span className="font-semibold text-blue-600">{stats.customers.interested}</span>
+            </div>
+            <div className="flex justify-between items-center pb-3 border-b border-gray-100">
+              <span className="text-sm text-gray-600">Expired Customers</span>
+              <span className="font-semibold text-red-600">{stats.customers.expired}</span>
+            </div>
+            <div className="flex justify-between items-center pb-3 border-b border-gray-100">
+              <span className="text-sm text-gray-600">Not Interested Customers</span>
+              <span className="font-semibold text-gray-600">{stats.customers.notInterested}</span>
             </div>
             <div className="flex justify-between items-center pb-3 border-b border-gray-100">
               <span className="text-sm text-gray-600">Total Spent</span>
@@ -359,33 +503,55 @@ export function DashboardOverview() {
           Recent Activity
         </h3>
         <div className="space-y-3">
-          <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-white rounded-lg border border-blue-100">
-            <div className="bg-blue-100 p-2 rounded-lg">
-              <Activity className="h-5 w-5 text-blue-600" />
+          {activities.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <Activity className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+              <p>No recent activity to display</p>
             </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">Dashboard loaded with real data</p>
-              <p className="text-xs text-gray-500">Just now</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-white rounded-lg border border-green-100">
-            <div className="bg-green-100 p-2 rounded-lg">
-              <Target className="h-5 w-5 text-green-600" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">All systems operational</p>
-              <p className="text-xs text-gray-500">System status updated</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-indigo-50 to-white rounded-lg border border-indigo-100">
-            <div className="bg-indigo-100 p-2 rounded-lg">
-              <DollarSign className="h-5 w-5 text-indigo-600" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">Revenue tracking active</p>
-              <p className="text-xs text-gray-500">Subscription monitoring enabled</p>
-            </div>
-          </div>
+          ) : (
+            activities.map((activity) => {
+              const getIconComponent = (iconName: string) => {
+                switch (iconName) {
+                  case 'Bell': return Bell;
+                  case 'Mail': return Mail;
+                  case 'AlertCircle': return AlertCircle;
+                  case 'Target': return Target;
+                  case 'CheckCircle': return CheckCircle;
+                  default: return Activity;
+                }
+              };
+
+              const getColorClasses = (color: string) => {
+                switch (color) {
+                  case 'green': return 'from-green-50 to-white border-green-100 bg-green-100 text-green-600';
+                  case 'blue': return 'from-blue-50 to-white border-blue-100 bg-blue-100 text-blue-600';
+                  case 'yellow': return 'from-yellow-50 to-white border-yellow-100 bg-yellow-100 text-yellow-600';
+                  case 'red': return 'from-red-50 to-white border-red-100 bg-red-100 text-red-600';
+                  case 'orange': return 'from-orange-50 to-white border-orange-100 bg-orange-100 text-orange-600';
+                  case 'gray': return 'from-gray-50 to-white border-gray-100 bg-gray-100 text-gray-600';
+                  default: return 'from-gray-50 to-white border-gray-100 bg-gray-100 text-gray-600';
+                }
+              };
+
+              const IconComponent = getIconComponent(activity.icon);
+              const colorClasses = getColorClasses(activity.color);
+
+              return (
+                <div key={activity.id} className={`flex items-center space-x-3 p-4 bg-gradient-to-r ${colorClasses} rounded-lg border`}>
+                  <div className={`p-2 rounded-lg ${colorClasses.includes('bg-') ? colorClasses.split(' ').find(c => c.startsWith('bg-')) : 'bg-gray-100'}`}>
+                    <IconComponent className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">{activity.title}</p>
+                    <p className="text-xs text-gray-500">{activity.description}</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {formatTimeAgo(activity.timestamp)}
+                    </p>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </div>

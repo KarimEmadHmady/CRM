@@ -183,7 +183,7 @@ export const ProfileForm = () => {
                         type="text"
                         value={profileData.username}
                         onChange={handleProfileChange}
-                        className={`pl-10 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        className={`pl-10 block w-full px-3 py-2 text-gray-600 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                           profileErrors.username ? 'border-red-300' : 'border-gray-300'
                         }`}
                         placeholder="Enter your full name"
@@ -208,7 +208,7 @@ export const ProfileForm = () => {
                         type="email"
                         value={profileData.email}
                         onChange={handleProfileChange}
-                        className={`pl-10 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        className={`pl-10 block w-full px-3 py-2 text-gray-600 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                           profileErrors.email ? 'border-red-300' : 'border-gray-300'
                         }`}
                         placeholder="Enter your email address"
@@ -224,7 +224,7 @@ export const ProfileForm = () => {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-blue-600 hover:bg-blue-700  text-white py-2 px-4 rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoading ? 'Loading...' : 'Update Profile'}
                   </button>
@@ -253,7 +253,7 @@ export const ProfileForm = () => {
                         type="password"
                         value={passwordData.currentPassword}
                         onChange={handlePasswordChange}
-                        className={`pl-10 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        className={`pl-10 block w-full px-3 py-2 text-gray-600 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                           passwordErrors.currentPassword ? 'border-red-300' : 'border-gray-300'
                         }`}
                         placeholder="Enter your current password"
@@ -278,7 +278,7 @@ export const ProfileForm = () => {
                         type="password"
                         value={passwordData.newPassword}
                         onChange={handlePasswordChange}
-                        className={`pl-10 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        className={`pl-10 block w-full px-3 py-2 text-gray-600 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                           passwordErrors.newPassword ? 'border-red-300' : 'border-gray-300'
                         }`}
                         placeholder="Enter your new password"
@@ -303,7 +303,7 @@ export const ProfileForm = () => {
                         type="password"
                         value={passwordData.confirmPassword}
                         onChange={handlePasswordChange}
-                        className={`pl-10 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        className={`pl-10 block w-full px-3 py-2 text-gray-600 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                           passwordErrors.confirmPassword ? 'border-red-300' : 'border-gray-300'
                         }`}
                         placeholder="Confirm your new password"

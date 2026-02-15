@@ -36,8 +36,8 @@ export function CustomersTab() {
     clearError
   } = useCustomers();
 
-  const categories = ['restaurant', 'gym'];
-  const statuses = ['interested', 'active', 'inactive', 'pending'];
+  const categories = ['restaurant', 'gym', 'other'];
+  const statuses = ['interested', 'not_interested', 'subscribed', 'expired'];
 
   // Filter customers based on current filters
   const getFilteredCustomers = () => {
@@ -151,7 +151,23 @@ export function CustomersTab() {
 
   const handleToggleStatus = async (customer: Customer) => {
     try {
-      const newStatus = customer.status === 'active' ? 'inactive' : 'active';
+      let newStatus: string;
+      switch (customer.status) {
+        case 'interested':
+          newStatus = 'not_interested';
+          break;
+        case 'not_interested':
+          newStatus = 'subscribed';
+          break;
+        case 'subscribed':
+          newStatus = 'expired';
+          break;
+        case 'expired':
+          newStatus = 'interested';
+          break;
+        default:
+          newStatus = 'interested';
+      }
       await updateCustomerStatus(customer._id, newStatus);
     } catch (error) {
       // Error is handled by the hook
@@ -160,10 +176,10 @@ export function CustomersTab() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'inactive': return 'bg-gray-100 text-gray-800';
+      case 'subscribed': return 'bg-green-100 text-green-800';
+      case 'expired': return 'bg-red-100 text-red-800';
       case 'interested': return 'bg-blue-100 text-blue-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'not_interested': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -172,6 +188,7 @@ export function CustomersTab() {
     switch (category) {
       case 'restaurant': return 'bg-orange-100 text-orange-800';
       case 'gym': return 'bg-pink-100 text-pink-800';
+      case 'other': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -213,9 +230,9 @@ export function CustomersTab() {
           <div className="text-2xl font-bold text-gray-900">{stats?.total || customers.length}</div>
         </div>
         <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <div className="text-sm text-gray-600 mb-1">Active Customers</div>
+          <div className="text-sm text-gray-600 mb-1">Subscribed Customers</div>
           <div className="text-2xl font-bold text-green-600">
-            {stats?.active || customers.filter(c => c.status === 'active').length}
+            {stats?.subscribed || customers.filter(c => c.status === 'subscribed').length}
           </div>
         </div>
         <div className="bg-white p-4 rounded-lg border border-gray-200">
@@ -333,7 +350,7 @@ export function CustomersTab() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(customer.status)}`}>
-                        {customer.status.charAt(0).toUpperCase() + customer.status.slice(1)}
+                        {customer.status.replace('_', ' ').charAt(0).toUpperCase() + customer.status.replace('_', ' ').slice(1)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -360,14 +377,12 @@ export function CustomersTab() {
                         </button>
                         <button
                           onClick={() => handleToggleStatus(customer)}
-                          className={`${
-                            customer.status === 'active' 
-                              ? 'text-orange-600 hover:text-orange-800' 
-                              : 'text-green-600 hover:text-green-800'
-                          }`}
-                          title={customer.status === 'active' ? 'Deactivate' : 'Activate'}
+                          className="text-blue-600 hover:text-blue-800"
+                          title="Change Status"
                         >
-                          {customer.status === 'active' ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                          </svg>
                         </button>
                         <button
                           onClick={() => handleDeleteCustomer(customer)}

@@ -71,17 +71,33 @@ export class CustomerService {
 
         // Calculate individual stats
         const totalCustomers = await Customer.countDocuments();
-        const activeCustomers = await Customer.countDocuments({ status: 'active' });
-        const inactiveCustomers = await Customer.countDocuments({ status: 'inactive' });
+        const subscribedCustomers = await Customer.countDocuments({ status: 'subscribed' });
+        const expiredCustomers = await Customer.countDocuments({ status: 'expired' });
         const interestedCustomers = await Customer.countDocuments({ status: 'interested' });
-        const pendingCustomers = await Customer.countDocuments({ status: 'pending' });
+        const notInterestedCustomers = await Customer.countDocuments({ status: 'not_interested' });
 
-        // Calculate total spent (assuming customers have totalSpent field, otherwise 0)
+        // Calculate total spent from paid subscriptions
         const totalSpentResult = await Customer.aggregate([
+            {
+                $lookup: {
+                    from: 'subscriptions',
+                    localField: '_id',
+                    foreignField: 'customer',
+                    as: 'subscriptions'
+                }
+            },
+            {
+                $unwind: '$subscriptions'
+            },
+            {
+                $match: {
+                    'subscriptions.paymentStatus': 'paid'
+                }
+            },
             {
                 $group: {
                     _id: null,
-                    totalSpent: { $sum: '$totalSpent' }
+                    totalSpent: { $sum: '$subscriptions.price' }
                 }
             }
         ]);
@@ -89,10 +105,10 @@ export class CustomerService {
 
         return {
             total: totalCustomers,
-            active: activeCustomers,
-            inactive: inactiveCustomers,
+            subscribed: subscribedCustomers,
+            expired: expiredCustomers,
             interested: interestedCustomers,
-            pending: pendingCustomers,
+            notInterested: notInterestedCustomers,
             totalSpent: totalSpent,
             statusStats: stats,
             categoryStats: categoryStats

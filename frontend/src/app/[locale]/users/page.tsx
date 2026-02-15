@@ -11,7 +11,7 @@ export default function UsersPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const [users, setUsers] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRole, setSelectedRole] = useState<'all' | 'admin' | 'user'>('all');
+  const [selectedRole, setSelectedRole] = useState<'all' | 'admin' | 'manager' | 'staff'>('all');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState<any>(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -164,7 +164,8 @@ export default function UsersPage() {
   const getRoleColor = (role: string) => {
     switch (role) {
       case 'admin': return 'bg-purple-100 text-purple-800';
-      case 'user': return 'bg-blue-100 text-blue-800';
+      case 'manager': return 'bg-orange-100 text-orange-800';
+      case 'staff': return 'bg-blue-100 text-blue-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -235,7 +236,7 @@ export default function UsersPage() {
                   placeholder="Search users..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full sm:w-64 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="pl-10 text-gray-600 pr-4 py-2 w-full sm:w-64 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                 />
               </div>
 
@@ -244,11 +245,12 @@ export default function UsersPage() {
                 <select
                   value={selectedRole}
                   onChange={(e) => setSelectedRole(e.target.value as any)}
-                  className="pl-10 pr-8 py-2 w-full sm:w-auto border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none outline-none cursor-pointer"
+                  className="pl-10 text-gray-600 pr-8 py-2 w-full sm:w-auto border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none outline-none cursor-pointer"
                 >
                   <option value="all">All Roles</option>
                   <option value="admin">Admin</option>
-                  <option value="user">User</option>
+                  <option value="manager">Manager</option>
+                  <option value="staff">Staff</option>
                 </select>
               </div>
             </div>
@@ -422,7 +424,7 @@ export default function UsersPage() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && userToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm   flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
             <div className="flex items-start mb-4">
               <div className="p-3 bg-red-100 rounded-full flex-shrink-0">
@@ -462,7 +464,7 @@ export default function UsersPage() {
 
       {/* Edit User Modal */}
       {showEditModal && userToEdit && editedUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-xl">
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-start">
@@ -506,7 +508,7 @@ export default function UsersPage() {
                   type="text"
                   value={editedUser.username || ''}
                   onChange={(e) => setEditedUser({ ...editedUser, username: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-3 py-2 text-gray-600 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   required
                 />
               </div>
@@ -519,7 +521,7 @@ export default function UsersPage() {
                   type="email"
                   value={editedUser.email || ''}
                   onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-3 py-2 text-gray-600 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   required
                 />
               </div>
@@ -529,12 +531,13 @@ export default function UsersPage() {
                   Role
                 </label>
                 <select
-                  value={editedUser.role || 'user'}
+                  value={editedUser.role || 'staff'}
                   onChange={(e) => setEditedUser({ ...editedUser, role: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none cursor-pointer"
+                  className="w-full px-3 py-2 text-gray-600 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none cursor-pointer"
                 >
-                  <option value="user">User</option>
                   <option value="admin">Admin</option>
+                  <option value="manager">Manager</option>
+                  <option value="staff">Staff</option>
                 </select>
               </div>
 
@@ -545,7 +548,7 @@ export default function UsersPage() {
                 <select
                   value={editedUser.isActive ? 'true' : 'false'}
                   onChange={(e) => setEditedUser({ ...editedUser, isActive: e.target.value === 'true' })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none cursor-pointer"
+                  className="w-full px-3 py-2 border text-gray-600 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none cursor-pointer"
                 >
                   <option value="true">Active</option>
                   <option value="false">Inactive</option>

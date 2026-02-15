@@ -191,11 +191,18 @@ export function NotificationDetailsModal({
           {/* Metadata */}
           {notification.metadata && Object.keys(notification.metadata).length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-2">Metadata</label>
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <pre className="text-sm text-gray-700 whitespace-pre-wrap">
-                  {JSON.stringify(notification.metadata, null, 2)}
-                </pre>
+              <label className="block text-sm font-medium text-gray-500 mb-2">Additional Information</label>
+              <div className="bg-gray-50 p-3 rounded-lg space-y-2">
+                {Object.entries(notification.metadata).map(([key, value]) => (
+                  <div key={key} className="flex items-start space-x-2">
+                    <span className="text-sm font-medium text-gray-600 capitalize min-w-24">
+                      {key.replace(/_/g, ' ')}:
+                    </span>
+                    <span className="text-sm text-gray-900 flex-1">
+                      {typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           )}

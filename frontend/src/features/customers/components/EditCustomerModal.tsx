@@ -14,14 +14,15 @@ interface EditCustomerModalProps {
 
 const categories = [
   'restaurant',
-  'gym'
+  'gym',
+  'other'
 ];
 
 const statuses = [
   { value: 'interested', label: 'Interested' },
-  { value: 'active', label: 'Active' },
-  { value: 'inactive', label: 'Inactive' },
-  { value: 'pending', label: 'Pending' }
+  { value: 'not_interested', label: 'Not Interested' },
+  { value: 'subscribed', label: 'Subscribed' },
+  { value: 'expired', label: 'Expired' }
 ];
 
 export function EditCustomerModal({ isOpen, onClose, onSubmit, customer, loading = false }: EditCustomerModalProps) {

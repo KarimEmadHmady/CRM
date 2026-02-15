@@ -125,25 +125,8 @@ export const useAuth = () => {
       
       const response = await authApi.register(userData);
       
-      // Extract data from response structure - backend returns {success: true, data: {...}}
-      const authData = (response as any).success ? (response as any).data : response;
-      
-      // Save tokens to localStorage
-      if (authData.token && authData.user) {
-        setAuthTokens(authData.token, authData.refreshToken || '');
-        setUser(authData.user);
- 
-        
-        // Update Redux state
-        dispatch(loginSuccess({
-          user: authData.user,
-          token: authData.token,
-          refreshToken: authData.refreshToken || ''
-        }));
-      } else {
-        console.error(' Invalid auth data structure:', authData);
-        dispatch(loginFailure('Invalid response from server'));
-      }
+      // Just return the response, don't auto-login
+      dispatch(setLoading(false));
       
       return response;
     } catch (error: any) {
