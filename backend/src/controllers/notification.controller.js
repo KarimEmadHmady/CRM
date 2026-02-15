@@ -113,7 +113,8 @@ export class NotificationController {
 
     static async createSubscriptionExpiryNotificationsController(req, res, next) {
         try {
-            const notifications = await NotificationService.createSubscriptionExpiryNotificationsService();
+            const { daysBefore = 5 } = req.body;
+            const notifications = await NotificationService.createSubscriptionExpiryNotificationsService(daysBefore);
             res.status(201).json({ success: true, data: notifications });
         } catch (error) {
             next(error);

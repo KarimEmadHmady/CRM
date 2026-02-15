@@ -2,6 +2,7 @@ import { Notification } from "../modles/notification.model.js";
 import { Subscription } from "../modles/subscription.model.js";
 import { Customer } from "../modles/customer.model.js";
 import { EmailService } from "./email.service.js";
+import { SubscriptionService } from "./subscription.service.js";
 import { v4 as uuid } from "uuid";
 
 export class NotificationService {
@@ -252,9 +253,9 @@ export class NotificationService {
     /**
      * ✅ Create subscription expiry notifications with NULL checks
      */
-    static async createSubscriptionExpiryNotificationsService() {
+    static async createSubscriptionExpiryNotificationsService(daysBefore = 5) {
         try {
-            const expiringSubscriptions = await Subscription.getExpiringSoonService(5);
+            const expiringSubscriptions = await SubscriptionService.getExpiringSoonService(daysBefore);
             
             if (!expiringSubscriptions || expiringSubscriptions.length === 0) {
                 console.log('ℹ️ No subscriptions expiring soon');
