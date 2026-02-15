@@ -4,7 +4,7 @@ export interface Customer {
   email: string;
   phone: string;
   address: string;
-  category: 'gym' | 'restaurant' | 'other';
+  category: string;
   status: 'interested' | 'not_interested' | 'subscribed' | 'expired';
   notes: string;
   totalSpent: number;
@@ -19,7 +19,7 @@ export interface CreateCustomerRequest {
   email: string;
   phone: string;
   address: string;
-  category: 'gym' | 'restaurant' | 'other';
+  category: string;
   notes: string;
 }
 

@@ -4,6 +4,31 @@ import { useState, useEffect } from 'react';
 import { X, User, Mail, Phone, MapPin, Tag, FileText } from 'lucide-react';
 import { Customer, UpdateCustomerRequest } from '../types/customer.types';
 
+const categories = [
+  'restaurant',
+  'gym',
+  'retail',
+  'education',
+  'healthcare',
+  'technology',
+  'finance',
+  'real estate',
+  'automotive',
+  'beauty',
+  'consulting',
+  'manufacturing',
+  'construction',
+  'transportation',
+  'hospitality',
+  'entertainment',
+  'media',
+  'agriculture',
+  'energy',
+  'government',
+  'non-profit',
+  'other'
+];
+
 interface EditCustomerModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -12,11 +37,6 @@ interface EditCustomerModalProps {
   loading?: boolean;
 }
 
-const categories = [
-  'restaurant',
-  'gym',
-  'other'
-];
 
 const statuses = [
   { value: 'interested', label: 'Interested' },
@@ -228,9 +248,10 @@ export function EditCustomerModal({ isOpen, onClose, onSubmit, customer, loading
               <select
                 value={formData.category}
                 onChange={handleChange('category')}
-                className="w-full pl-10 pr-3 py-2 text-gray-600  border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none cursor-pointer"
+                className="w-full pl-10 pr-3 py-2 text-gray-600 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none cursor-pointer"
               >
-                {categories.map(category => (
+                <option value="">Select a category</option>
+                {categories.map((category: string) => (
                   <option key={category} value={category}>
                     {category.charAt(0).toUpperCase() + category.slice(1)}
                   </option>

@@ -36,7 +36,30 @@ export function CustomersTab() {
     clearError
   } = useCustomers();
 
-  const categories = ['restaurant', 'gym', 'other'];
+  const categories = [
+    'restaurant',
+    'gym',
+    'retail',
+    'education',
+    'healthcare',
+    'technology',
+    'finance',
+    'real estate',
+    'automotive',
+    'beauty',
+    'consulting',
+    'manufacturing',
+    'construction',
+    'transportation',
+    'hospitality',
+    'entertainment',
+    'media',
+    'agriculture',
+    'energy',
+    'government',
+    'non-profit',
+    'other'
+  ];
   const statuses = ['interested', 'not_interested', 'subscribed', 'expired'];
 
   // Filter customers based on current filters
@@ -185,12 +208,27 @@ export function CustomersTab() {
   };
 
   const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'restaurant': return 'bg-orange-100 text-orange-800';
-      case 'gym': return 'bg-pink-100 text-pink-800';
-      case 'other': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+    // Generate a consistent color based on category string
+    const colors = [
+      'bg-blue-100 text-blue-800',
+      'bg-green-100 text-green-800',
+      'bg-yellow-100 text-yellow-800',
+      'bg-red-100 text-red-800',
+      'bg-purple-100 text-purple-800',
+      'bg-pink-100 text-pink-800',
+      'bg-indigo-100 text-indigo-800',
+      'bg-orange-100 text-orange-800',
+      'bg-teal-100 text-teal-800',
+      'bg-cyan-100 text-cyan-800'
+    ];
+    
+    // Use a simple hash function to get consistent color for same category
+    let hash = 0;
+    for (let i = 0; i < category.length; i++) {
+      hash = category.charCodeAt(i) + ((hash << 5) - hash);
     }
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
   };
 
   return (

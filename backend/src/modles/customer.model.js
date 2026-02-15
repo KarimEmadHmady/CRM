@@ -8,7 +8,7 @@ const customerSchema = new mongoose.Schema(
         address: { type: String, trim: true },
         category: { 
             type: String, 
-            enum: ['gym', 'restaurant', 'other'], 
+            trim: true, 
             required: true 
         },
         status: { 

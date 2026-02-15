@@ -4,6 +4,31 @@ import { useState } from 'react';
 import { X, User, Mail, Phone, MapPin, Tag, FileText } from 'lucide-react';
 import { CreateCustomerRequest } from '../types/customer.types';
 
+const categories = [
+  'restaurant',
+  'gym',
+  'retail',
+  'education',
+  'healthcare',
+  'technology',
+  'finance',
+  'real estate',
+  'automotive',
+  'beauty',
+  'consulting',
+  'manufacturing',
+  'construction',
+  'transportation',
+  'hospitality',
+  'entertainment',
+  'media',
+  'agriculture',
+  'energy',
+  'government',
+  'non-profit',
+  'other'
+];
+
 interface CreateCustomerModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -11,11 +36,6 @@ interface CreateCustomerModalProps {
   loading?: boolean;
 }
 
-const categories = [
-  'restaurant',
-  'gym',
-  'other'
-];
 
 export function CreateCustomerModal({ isOpen, onClose, onSubmit, loading = false }: CreateCustomerModalProps) {
   const [formData, setFormData] = useState<CreateCustomerRequest>({
@@ -23,7 +43,7 @@ export function CreateCustomerModal({ isOpen, onClose, onSubmit, loading = false
     email: '',
     phone: '',
     address: '',
-    category: 'restaurant',
+    category: '',
     notes: ''
   });
   const [errors, setErrors] = useState<Partial<CreateCustomerRequest>>({});
@@ -212,9 +232,10 @@ export function CreateCustomerModal({ isOpen, onClose, onSubmit, loading = false
               <select
                 value={formData.category}
                 onChange={handleChange('category')}
-                className="w-full pl-10 pr-3 py-2 text-gray-600  border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none cursor-pointer"
+                className="w-full pl-10 pr-3 py-2 text-gray-600 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none cursor-pointer"
               >
-                {categories.map(category => (
+                <option value="">Select a category</option>
+                {categories.map((category: string) => (
                   <option key={category} value={category}>
                     {category.charAt(0).toUpperCase() + category.slice(1)}
                   </option>
