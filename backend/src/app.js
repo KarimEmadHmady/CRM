@@ -9,7 +9,8 @@ import subscriptionRoutes from "./routes/subscription.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import emailCampaignRoutes from "./routes/emailCampaign.routes.js";
 import authRoutes from "./routes/auth.routes.js";
-import { CronService } from "./services/cron.service.js";
+import cronRoutes from "./routes/cron.routes.js";
+// import { CronService } from "./services/cron.service.js";
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use(cors({
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/api/cron", cronRoutes);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
@@ -42,7 +44,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/email-campaigns", emailCampaignRoutes);
 
 // // Initialize cron jobs
-CronService.initializeCronJobs();
+// CronService.initializeCronJobs();
 
 app.use(notFound);
 app.use(errorMiddleware);
