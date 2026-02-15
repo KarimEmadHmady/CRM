@@ -300,8 +300,8 @@ export class NotificationService {
                         customer: subscription.customer._id,
                         subscription: subscription._id,
                         type: 'subscription_expiry',
-                        title: 'Subscription Expiring Soon',
-                        message: `Dear ${subscription.customer.name}, your subscription will expire on ${subscription.endDate.toLocaleDateString()}. Please renew to continue enjoying our services.`,
+                        title: 'تنبيه انتهاء الاشتراك / Subscription Expiring Soon',
+                        message: `عزيزي ${subscription.customer.name}، اشتراكك سينتهي في تاريخ ${subscription.endDate.toLocaleDateString()}. يرجى التجديد لمواصلة الاستمتاع بخدماتنا.\n\nDear ${subscription.customer.name}, your subscription will expire on ${subscription.endDate.toLocaleDateString()}. Please renew to continue enjoying our services.`,
                         scheduledFor: new Date(),
                         channel: 'email',
                         isAutomated: true,
@@ -385,8 +385,8 @@ export class NotificationService {
                         customer: subscription.customer._id,
                         subscription: subscription._id,
                         type: 'payment_reminder',
-                        title: 'Payment Reminder',
-                        message: `Dear ${subscription.customer.name}, this is a reminder that your subscription payment is pending. Please complete your payment to avoid service interruption.`,
+                        title: 'تذكير بالدفع / Payment Reminder',
+                        message: `عزيزي ${subscription.customer.name}، هذا تذكير بأن دفع اشتراكك معلق. يرجى إكمال الدفع لتجنب انقطاع الخدمة.\n\nDear ${subscription.customer.name}, this is a reminder that your subscription payment is pending. Please complete your payment to avoid service interruption.`,
                         scheduledFor: new Date(),
                         channel: 'email',
                         isAutomated: true,
@@ -436,26 +436,26 @@ export class NotificationService {
             let categorySpecificLink = '';
 
             if (customer.category === 'gym') {
-                categorySpecificContent = 'We\'re excited to help you achieve your fitness goals! Our gym offers state-of-the-art equipment and professional trainers to support your journey.';
+                categorySpecificContent = 'نحن متحمسون لمساعدتك في تحقيق أهدافك اللياقية! يقدم نادينا معدات حديثة ومدربين محترفين لدعم رحلتك.\n\nWe\'re excited to help you achieve your fitness goals! Our gym offers state-of-the-art equipment and professional trainers to support your journey.';
                 categorySpecificImage = 'https://gymcore-system.netlify.app/234345555.jpg';
                 categorySpecificLink = 'https://gymcore-system.netlify.app';
             } else if (customer.category === 'restaurant') {
-                categorySpecificContent = 'We\'re delighted to welcome you to our culinary family! Experience exquisite dishes and exceptional service in an elegant atmosphere.';
+                categorySpecificContent = 'يسرنا أن نرحب بك في عائلتنا الطهوية! استمتع بأطباق رائعة وخدمة استثنائية في أجواء أنيقة.\n\nWe\'re delighted to welcome you to our culinary family! Experience exquisite dishes and exceptional service in an elegant atmosphere.';
                 categorySpecificImage = 'https://qrx-menu.vercel.app/1.PNG';
                 categorySpecificLink = 'https://qrx-menu.vercel.app';
             } else {
-                categorySpecificContent = 'We\'re thrilled to have you join our community! We look forward to providing you with excellent service and support.';
+                categorySpecificContent = 'نحن سعداء بانضمامك إلى مجتمعنا! نتطلع إلى تزويدك بخدمة ودعم ممتازين.\n\nWe\'re thrilled to have you join our community! We look forward to providing you with excellent service and support.';
                 categorySpecificImage = 'https://gymcore-system.netlify.app/234345555.jpg';
                 categorySpecificLink = 'https://gymcore-system.netlify.app';
             }
 
-            const message = `Dear ${customer.name}, welcome to our service! ${categorySpecificContent} If you have any questions, please don't hesitate to reach out.`;
+            const message = `عزيزي ${customer.name}، مرحباً بك في خدمتنا! ${categorySpecificContent} إذا كان لديك أي أسئلة، فلا تتردد في التواصل معنا.\n\nDear ${customer.name}, welcome to our service! ${categorySpecificContent} If you have any questions, please don't hesitate to reach out.`;
 
             // Create notification record
             const notification = await this.createNotificationService({
                 customer: customerId,
                 type: 'welcome',
-                title: 'Welcome to our Service!',
+                title: 'مرحباً بك في خدمتنا! / Welcome to our Service!',
                 message: message,
                 scheduledFor: new Date(),
                 channel: 'email',
@@ -472,7 +472,7 @@ export class NotificationService {
             try {
                 await EmailService.sendEmail({
                     to: customer.email,
-                    subject: 'Welcome to our Service!',
+                    subject: 'مرحباً بك في خدمتنا! / Welcome to our Service!',
                     text: message,
                     template: 'welcome',
                     metadata: notification.metadata

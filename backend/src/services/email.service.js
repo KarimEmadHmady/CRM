@@ -28,21 +28,29 @@ export class EmailService {
                 const { category, categorySpecificContent, categorySpecificImage, categorySpecificLink } = metadata;
                 
                 finalHtml = `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f9fa;">
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f9fa; direction: rtl;">
                         <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                             <div style="text-align: center; margin-bottom: 30px;">
                                 <img src="${categorySpecificImage}" alt="Welcome Image" style="max-width: 200px; border-radius: 8px;">
                             </div>
-                            <h2 style="color: #333; text-align: center; margin-bottom: 20px;">Welcome to Our Service!</h2>
-                            <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">${text}</p>
+                            <h2 style="color: #333; text-align: center; margin-bottom: 20px;">مرحباً بك في خدمتنا! / Welcome to Our Service!</h2>
+                            <div style="color: #666; line-height: 1.6; margin-bottom: 20px; text-align: right;">
+                                <p style="margin-bottom: 15px;"><strong>العربية:</strong></p>
+                                <p style="margin-bottom: 20px;">${text.split('\n\n')[0]}</p>
+                            </div>
+                            <div style="border-top: 2px solid #eee; margin: 20px 0;"></div>
+                            <div style="color: #666; line-height: 1.6; margin-bottom: 20px; text-align: left;">
+                                <p style="margin-bottom: 15px;"><strong>English:</strong></p>
+                                <p style="margin-bottom: 20px;">${text.split('\n\n')[1] || text}</p>
+                            </div>
                             <div style="text-align: center; margin: 30px 0;">
                                 <a href="${categorySpecificLink}" style="background-color: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
-                                    Visit Our Website
+                                    زيارة موقعنا / Visit Our Website
                                 </a>
                             </div>
                             <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
                                 <p style="color: #888; font-size: 14px; margin: 0;">
-                                    Best regards,<br>
+                                    مع أطيب التحيات / Best regards,<br>
                                     <strong>${process.env.APP_NAME || 'System'}</strong>
                                 </p>
                             </div>
@@ -85,90 +93,203 @@ export class EmailService {
     static generateTemplate(template, content) {
         const templates = {
             welcome: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #333;">Welcome to Our Service!</h2>
-                    <p>Dear Customer,</p>
-                    <p>${content}</p>
-                    <p>We're excited to have you with us. If you have any questions, please don't hesitate to reach out.</p>
-                    <br>
-                    <p>Best regards,<br>${process.env.APP_NAME || 'System'}</p>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; direction: rtl;">
+                    <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <h2 style="color: #333; text-align: center; margin-bottom: 20px;">مرحباً بك في خدمتنا! / Welcome to Our Service!</h2>
+                        <div style="text-align: right; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>عزيزي العميل،</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content.split('\n\n')[0] || content}</p>
+                        </div>
+                        <div style="border-top: 2px solid #eee; margin: 20px 0;"></div>
+                        <div style="text-align: left; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>Dear Customer,</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content.split('\n\n')[1] || content}</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <p style="color: #888; font-size: 14px; margin: 0;">
+                                مع أطيب التحيات / Best regards,<br>${process.env.APP_NAME || 'System'}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             `,
             expiry_reminder: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #ff6b6b;">Subscription Expiring Soon</h2>
-                    <p>Dear Customer,</p>
-                    <p>${content}</p>
-                    <p>Please renew your subscription to continue enjoying our services.</p>
-                    <br>
-                    <p>Best regards,<br>${process.env.APP_NAME || 'System'}</p>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; direction: rtl;">
+                    <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <h2 style="color: #ff6b6b; text-align: center; margin-bottom: 20px;">تنبيه انتهاء الاشتراك / Subscription Expiring Soon</h2>
+                        <div style="text-align: right; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>عزيزي العميل،</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content.split('\n\n')[0] || content}</p>
+                            <p style="color: #666;">يرجى تجديد اشتراكك لمواصلة الاستمتاع بخدماتنا.</p>
+                        </div>
+                        <div style="border-top: 2px solid #eee; margin: 20px 0;"></div>
+                        <div style="text-align: left; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>Dear Customer,</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content.split('\n\n')[1] || content}</p>
+                            <p style="color: #666;">Please renew your subscription to continue enjoying our services.</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <p style="color: #888; font-size: 14px; margin: 0;">
+                                مع أطيب التحيات / Best regards,<br>${process.env.APP_NAME || 'System'}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             `,
             payment_reminder: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #ffa500;">Payment Reminder</h2>
-                    <p>Dear Customer,</p>
-                    <p>${content}</p>
-                    <p>Please complete your payment to avoid service interruption.</p>
-                    <br>
-                    <p>Best regards,<br>${process.env.APP_NAME || 'System'}</p>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; direction: rtl;">
+                    <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <h2 style="color: #ffa500; text-align: center; margin-bottom: 20px;">تذكير بالدفع / Payment Reminder</h2>
+                        <div style="text-align: right; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>عزيزي العميل،</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content.split('\n\n')[0] || content}</p>
+                            <p style="color: #666;">يرجى إكمال الدفع لتجنب انقطاع الخدمة.</p>
+                        </div>
+                        <div style="border-top: 2px solid #eee; margin: 20px 0;"></div>
+                        <div style="text-align: left; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>Dear Customer,</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content.split('\n\n')[1] || content}</p>
+                            <p style="color: #666;">Please complete your payment to avoid service interruption.</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <p style="color: #888; font-size: 14px; margin: 0;">
+                                مع أطيب التحيات / Best regards,<br>${process.env.APP_NAME || 'System'}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             `,
             newsletter: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #007bff;">Monthly Newsletter</h2>
-                    <p>Dear Customer,</p>
-                    <p>${content}</p>
-                    <p>Here are our latest updates and news for this month.</p>
-                    <br>
-                    <p>Best regards,<br>${process.env.APP_NAME || 'System'}</p>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; direction: rtl;">
+                    <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <h2 style="color: #007bff; text-align: center; margin-bottom: 20px;">النشرة الإخبارية الشهرية / Monthly Newsletter</h2>
+                        <div style="text-align: right; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>عزيزي العميل،</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content}</p>
+                            <p style="color: #666;">هذه أحدث تحديثاتنا وأخبار هذا الشهر.</p>
+                        </div>
+                        <div style="border-top: 2px solid #eee; margin: 20px 0;"></div>
+                        <div style="text-align: left; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>Dear Customer,</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content}</p>
+                            <p style="color: #666;">Here are our latest updates and news for this month.</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <p style="color: #888; font-size: 14px; margin: 0;">
+                                مع أطيب التحيات / Best regards,<br>${process.env.APP_NAME || 'System'}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             `,
             announcement: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #dc3545;">Important Announcement</h2>
-                    <p>Dear Customer,</p>
-                    <p>${content}</p>
-                    <p>We wanted to inform you about this important update.</p>
-                    <br>
-                    <p>Best regards,<br>${process.env.APP_NAME || 'System'}</p>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; direction: rtl;">
+                    <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <h2 style="color: #dc3545; text-align: center; margin-bottom: 20px;">إعلان هام / Important Announcement</h2>
+                        <div style="text-align: right; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>عزيزي العميل،</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content}</p>
+                            <p style="color: #666;">نود إعلامك بهذا التحديث الهام.</p>
+                        </div>
+                        <div style="border-top: 2px solid #eee; margin: 20px 0;"></div>
+                        <div style="text-align: left; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>Dear Customer,</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content}</p>
+                            <p style="color: #666;">We wanted to inform you about this important update.</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <p style="color: #888; font-size: 14px; margin: 0;">
+                                مع أطيب التحيات / Best regards,<br>${process.env.APP_NAME || 'System'}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             `,
             survey: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #6f42c1;">Customer Survey</h2>
-                    <p>Dear Customer,</p>
-                    <p>${content}</p>
-                    <p>Your feedback is important to us. Please take a moment to complete our survey.</p>
-                    <br>
-                    <p>Best regards,<br>${process.env.APP_NAME || 'System'}</p>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; direction: rtl;">
+                    <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <h2 style="color: #6f42c1; text-align: center; margin-bottom: 20px;">استبيان العملاء / Customer Survey</h2>
+                        <div style="text-align: right; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>عزيزي العميل،</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content}</p>
+                            <p style="color: #666;">ملاحظاتك مهمة بالنسبة لنا. يرجى أخذ لحظة لإكمال استبياننا.</p>
+                        </div>
+                        <div style="border-top: 2px solid #eee; margin: 20px 0;"></div>
+                        <div style="text-align: left; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>Dear Customer,</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content}</p>
+                            <p style="color: #666;">Your feedback is important to us. Please take a moment to complete our survey.</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <p style="color: #888; font-size: 14px; margin: 0;">
+                                مع أطيب التحيات / Best regards,<br>${process.env.APP_NAME || 'System'}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             `,
             invitation: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #28a745;">Special Invitation</h2>
-                    <p>Dear Customer,</p>
-                    <p>${content}</p>
-                    <p>We'd like to invite you to this special event.</p>
-                    <br>
-                    <p>Best regards,<br>${process.env.APP_NAME || 'System'}</p>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; direction: rtl;">
+                    <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <h2 style="color: #28a745; text-align: center; margin-bottom: 20px;">دعوة خاصة / Special Invitation</h2>
+                        <div style="text-align: right; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>عزيزي العميل،</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content}</p>
+                            <p style="color: #666;">نود دعوتك إلى هذا الحدث الخاص.</p>
+                        </div>
+                        <div style="border-top: 2px solid #eee; margin: 20px 0;"></div>
+                        <div style="text-align: left; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>Dear Customer,</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content}</p>
+                            <p style="color: #666;">We'd like to invite you to this special event.</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <p style="color: #888; font-size: 14px; margin: 0;">
+                                مع أطيب التحيات / Best regards,<br>${process.env.APP_NAME || 'System'}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             `,
             promotion: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #28a745;">Special Offer!</h2>
-                    <p>Dear Customer,</p>
-                    <p>${content}</p>
-                    <p>Don't miss out on this amazing opportunity!</p>
-                    <br>
-                    <p>Best regards,<br>${process.env.APP_NAME || 'System'}</p>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; direction: rtl;">
+                    <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <h2 style="color: #28a745; text-align: center; margin-bottom: 20px;">عرض خاص! / Special Offer!</h2>
+                        <div style="text-align: right; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>عزيزي العميل،</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content}</p>
+                            <p style="color: #666;">لا تفوت هذه الفرصة الرائعة!</p>
+                        </div>
+                        <div style="border-top: 2px solid #eee; margin: 20px 0;"></div>
+                        <div style="text-align: left; margin-bottom: 20px;">
+                            <p style="color: #666; margin-bottom: 10px;"><strong>Dear Customer,</strong></p>
+                            <p style="color: #666; line-height: 1.6;">${content}</p>
+                            <p style="color: #666;">Don't miss out on this amazing opportunity!</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <p style="color: #888; font-size: 14px; margin: 0;">
+                                مع أطيب التحيات / Best regards,<br>${process.env.APP_NAME || 'System'}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             `,
             custom: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    ${content}
-                    <br>
-                    <p>Best regards,<br>${process.env.APP_NAME || 'System'}</p>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; direction: rtl;">
+                    <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <div style="text-align: right; margin-bottom: 20px;">
+                            <p style="color: #666; line-height: 1.6;">${content}</p>
+                        </div>
+                        <div style="border-top: 2px solid #eee; margin: 20px 0;"></div>
+                        <div style="text-align: left; margin-bottom: 20px;">
+                            <p style="color: #666; line-height: 1.6;">${content}</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <p style="color: #888; font-size: 14px; margin: 0;">
+                                مع أطيب التحيات / Best regards,<br>${process.env.APP_NAME || 'System'}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             `
         };
