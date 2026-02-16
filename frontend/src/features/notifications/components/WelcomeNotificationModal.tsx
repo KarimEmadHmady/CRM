@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { MessageCircle, X } from 'lucide-react';
 import { customerApi } from '@/features/customers/api/customer.api';
 import { Customer } from '@/features/customers/types/customer.types';
+import { ToastContainer } from '@/components/ui/Toast';
 
 interface WelcomeNotificationModalProps {
   isOpen: boolean;
@@ -17,6 +18,16 @@ export function WelcomeNotificationModal({ isOpen, onClose, onSubmit, loading }:
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [message, setMessage] = useState('Welcome to our CRM system! We\'re excited to have you as a customer.');
   const [customersLoading, setCustomersLoading] = useState(false);
+  const [toasts, setToasts] = useState<{ id: string; message: string; type: 'success' | 'error' | 'warning' }[]>([]);
+
+  const addToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    const id = Date.now().toString();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
 
   // Fetch customers when modal opens
   useEffect(() => {
@@ -42,7 +53,7 @@ export function WelcomeNotificationModal({ isOpen, onClose, onSubmit, loading }:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedCustomerId.trim()) {
-      alert('Please select a customer');
+      addToast('Please select a customer', 'warning');
       return;
     }
     try {
@@ -135,6 +146,9 @@ export function WelcomeNotificationModal({ isOpen, onClose, onSubmit, loading }:
           </div>
         </form>
       </div>
+      
+      {/* Toast Container */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }

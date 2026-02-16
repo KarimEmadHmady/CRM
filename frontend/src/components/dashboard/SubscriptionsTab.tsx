@@ -8,6 +8,7 @@ import { EditSubscriptionModal } from '@/features/subscriptions/components/EditS
 import { SubscriptionDetailsModal } from '@/features/subscriptions/components/SubscriptionDetailsModal';
 import { RenewSubscriptionModal } from '@/features/subscriptions/components/RenewSubscriptionModal';
 import { Subscription, CreateSubscriptionData, UpdateSubscriptionData } from '@/features/subscriptions/types/subscription.types';
+import { ToastContainer } from '@/components/ui/Toast';
 
 export function SubscriptionsTab() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,6 +28,7 @@ export function SubscriptionsTab() {
   const [selectedSubscriptions, setSelectedSubscriptions] = useState<string[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
+  const [toasts, setToasts] = useState<{ id: string; message: string; type: 'success' | 'error' | 'warning' }[]>([]);
 
   const {
     subscriptions,
@@ -42,6 +44,7 @@ export function SubscriptionsTab() {
     getActiveSubscriptions,
     getExpiredSubscriptions,
     getExpiringSoonSubscriptions,
+    fetchSubscriptions,
     clearError
   } = useSubscriptions();
 
@@ -96,6 +99,15 @@ export function SubscriptionsTab() {
     }
 
     return filtered;
+  };
+
+  const addToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    const id = Date.now().toString();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
   };
 
   const filteredSubscriptions = getFilteredSubscriptions();
@@ -199,7 +211,7 @@ export function SubscriptionsTab() {
 
   const handleBulkDelete = async () => {
     if (selectedSubscriptions.length === 0) {
-      alert('Please select at least one subscription to delete');
+      addToast('Please select at least one subscription to delete', 'warning');
       return;
     }
 
@@ -366,6 +378,8 @@ export function SubscriptionsTab() {
             setSelectedPackageType('all');
             setSelectedPaymentStatus('all');
             setSearchTerm('');
+            // Fetch all subscriptions to clear filters
+            fetchSubscriptions();
           }}
           className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors"
         >
@@ -675,7 +689,7 @@ export function SubscriptionsTab() {
                     await bulkDeleteSubscriptions(selectedSubscriptions);
                     setShowBulkDeleteModal(false);
                   } catch (error) {
-                    // Error is handled by the hook
+                    // Error is handled by hook
                   }
                 }}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
@@ -686,6 +700,8 @@ export function SubscriptionsTab() {
           </div>
         </div>
       )}
+      {/* Toast Container */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }

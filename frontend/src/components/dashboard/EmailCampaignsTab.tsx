@@ -11,6 +11,7 @@ import { ScheduleCampaignModal } from '@/features/email-campaigns/components/Sch
 import { CampaignStatsModal } from '@/features/email-campaigns/components/CampaignStatsModal';
 import { CampaignRecipientsModal } from '@/features/email-campaigns/components/CampaignRecipientsModal';
 import { EmailCampaign, Customer } from '@/features/email-campaigns/types/emailCampaign.types';
+import { ToastContainer } from '@/components/ui/Toast';
 
 export function EmailCampaignsTab() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -30,6 +31,7 @@ export function EmailCampaignsTab() {
   const [campaignStats, setCampaignStats] = useState<any>(null);
   const [campaignRecipients, setCampaignRecipients] = useState<Customer[]>([]);
   const [campaignToDelete, setCampaignToDelete] = useState<EmailCampaign | null>(null);
+  const [toasts, setToasts] = useState<{ id: string; message: string; type: 'success' | 'error' | 'warning' }[]>([]);
 
   const {
     campaigns,
@@ -69,6 +71,15 @@ export function EmailCampaignsTab() {
     }
 
     return filtered;
+  };
+
+  const addToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    const id = Date.now().toString();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
   };
 
   const filteredCampaigns = getFilteredCampaigns();
@@ -211,9 +222,9 @@ export function EmailCampaignsTab() {
         });
         setShowTestModal(false);
         setCampaignToTest(null);
-        alert('Test emails sent successfully!');
+        addToast('Test emails sent successfully!', 'success');
       } catch (error: any) {
-        alert('Failed to send test emails: ' + error.message);
+        addToast('Failed to send test emails: ' + error.message, 'error');
       }
     }
   };
@@ -584,6 +595,9 @@ export function EmailCampaignsTab() {
         campaign={campaignToView}
         recipients={campaignRecipients}
       />
+
+      {/* Toast Container */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }

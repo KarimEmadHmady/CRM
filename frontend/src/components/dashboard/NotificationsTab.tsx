@@ -1,5 +1,5 @@
 'use client';
- 
+
 import { useState } from 'react';
 import { Search, Plus, Edit, Trash2, Eye, Send, Calendar, Filter, Bell, Mail, MessageSquare, Smartphone, CheckSquare } from 'lucide-react';
 import { useNotifications } from '@/features/notifications/hooks/useNotifications';
@@ -10,7 +10,8 @@ import { SubscriptionExpiryModal } from '@/features/notifications/components/Sub
 import { PaymentReminderModal } from '@/features/notifications/components/PaymentReminderModal';
 import { WelcomeNotificationModal } from '@/features/notifications/components/WelcomeNotificationModal';
 import { Notification, CreateNotificationData, UpdateNotificationData } from '@/features/notifications/types/notification.types';
- 
+import { ToastContainer } from '@/components/ui/Toast';
+
 export function NotificationsTab() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
@@ -28,6 +29,7 @@ export function NotificationsTab() {
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
+  const [toasts, setToasts] = useState<{ id: string; message: string; type: 'success' | 'error' | 'warning' }[]>([]);
 
   const {
     notifications,
@@ -90,6 +92,15 @@ export function NotificationsTab() {
     return filtered;
   };
 
+  const addToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    const id = Date.now().toString();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
+
   const filteredNotifications = getFilteredNotifications();
 
   const handleCreateNotification = async (notificationData: CreateNotificationData) => {
@@ -138,7 +149,7 @@ export function NotificationsTab() {
   const handleSendNotification = async (notification: Notification) => {
     try {
       await sendNotification(notification._id);
-      alert('Notification sent successfully!');
+      addToast('Notification sent successfully!', 'success');
     } catch (error) {
       // Error is handled by the hook
     }
@@ -147,7 +158,7 @@ export function NotificationsTab() {
   const handleCreateSubscriptionExpiryNotifications = async (daysBefore: number) => {
     try {
       await createSubscriptionExpiryNotifications(daysBefore);
-      alert('Subscription expiry notifications created successfully!');
+      addToast('Subscription expiry notifications created successfully!', 'success');
     } catch (error) {
       // Error is handled by the hook
     }
@@ -156,7 +167,7 @@ export function NotificationsTab() {
   const handleCreatePaymentReminderNotifications = async (daysBefore: number) => {
     try {
       await createPaymentReminderNotifications(daysBefore);
-      alert('Payment reminder notifications created successfully!');
+      addToast('Payment reminder notifications created successfully!', 'success');
     } catch (error) {
       // Error is handled by the hook
     }
@@ -165,7 +176,7 @@ export function NotificationsTab() {
   const handleCreateWelcomeNotification = async (customerId: string, message: string) => {
     try {
       await createWelcomeNotification(customerId, message);
-      alert('Welcome notification sent successfully!');
+      addToast('Welcome notification sent successfully!', 'success');
     } catch (error) {
       // Error is handled by the hook
     }
@@ -192,7 +203,7 @@ export function NotificationsTab() {
 
   const handleBulkDelete = async () => {
     if (selectedNotifications.length === 0) {
-      alert('Please select at least one notification to delete');
+      addToast('Please select at least one notification to delete', 'warning');
       return;
     }
 
@@ -649,6 +660,9 @@ export function NotificationsTab() {
           </div>
         </div>
       )}
+
+      {/* Toast Container */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }

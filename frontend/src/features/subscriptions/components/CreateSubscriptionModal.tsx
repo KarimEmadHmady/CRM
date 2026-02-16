@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { X, CreditCard, Calendar, DollarSign, User, Package } from 'lucide-react';
 import { CreateSubscriptionData, Customer } from '../types/subscription.types';
 import { customerApi } from '@/features/customers/api/customer.api';
+import { ToastContainer } from '@/components/ui/Toast';
 
 interface CreateSubscriptionModalProps {
   isOpen: boolean;
@@ -27,6 +28,17 @@ export function CreateSubscriptionModal({ isOpen, onClose, onSubmit, loading = f
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [customersLoading, setCustomersLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [toasts, setToasts] = useState<{ id: string; message: string; type: 'success' | 'error' | 'warning' }[]>([]);
+
+
+    const addToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    const id = Date.now().toString();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
 
   const packageTypes = [
     { value: 'basic', label: 'Basic', price: 29 },
@@ -98,7 +110,7 @@ export function CreateSubscriptionModal({ isOpen, onClose, onSubmit, loading = f
     e.preventDefault();
     
     if (!formData.customer || !formData.startDate || !formData.endDate) {
-      alert('Please fill in all required fields');
+      addToast('Please fill in all required fields');
       return;
     }
 
@@ -343,6 +355,8 @@ export function CreateSubscriptionModal({ isOpen, onClose, onSubmit, loading = f
           </div>
         </form>
       </div>
+            {/* Toast Container */}
+            <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }

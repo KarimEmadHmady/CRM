@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Calendar, DollarSign } from 'lucide-react';
+import { ToastContainer } from '@/components/ui/Toast';
 
 interface RenewSubscriptionModalProps {
   isOpen: boolean;
@@ -24,13 +25,25 @@ export function RenewSubscriptionModal({
     new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   );
   const [price, setPrice] = useState(currentPrice.toString());
+  const [toasts, setToasts] = useState<{ id: string; message: string; type: 'success' | 'error' | 'warning' }[]>([]);
+
+
+    const addToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    const id = Date.now().toString();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     const priceNum = parseFloat(price);
     if (isNaN(priceNum) || priceNum <= 0) {
-      alert('Please enter a valid price');
+      addToast('Please enter a valid price');
       return;
     }
 
@@ -116,6 +129,9 @@ export function RenewSubscriptionModal({
           </div>
         </form>
       </div>
+
+      {/* Toast Container */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }

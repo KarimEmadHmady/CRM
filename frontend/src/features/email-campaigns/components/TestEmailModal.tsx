@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, Mail, Send } from 'lucide-react';
 import { EmailCampaign } from '../types/emailCampaign.types';
+import { ToastContainer } from '@/components/ui/Toast';
 
 interface TestEmailModalProps {
   isOpen: boolean;
@@ -15,6 +16,16 @@ interface TestEmailModalProps {
 export function TestEmailModal({ isOpen, onClose, campaign, onTest, loading = false }: TestEmailModalProps) {
   const [testEmails, setTestEmails] = useState<string[]>(['']);
   const [isSending, setIsSending] = useState(false);
+  const [toasts, setToasts] = useState<{ id: string; message: string; type: 'success' | 'error' | 'warning' }[]>([]);
+
+  const addToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    const id = Date.now().toString();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
 
   const handleAddEmail = () => {
     setTestEmails([...testEmails, '']);
@@ -37,7 +48,7 @@ export function TestEmailModal({ isOpen, onClose, campaign, onTest, loading = fa
     const validEmails = testEmails.filter(email => email.trim() !== '');
     
     if (validEmails.length === 0) {
-      alert('Please add at least one email address');
+      addToast('Please add at least one email address', 'warning');
       return;
     }
 
@@ -49,7 +60,7 @@ export function TestEmailModal({ isOpen, onClose, campaign, onTest, loading = fa
       setTestEmails(['']);
     } catch (error: any) {
       setIsSending(false);
-      alert('Failed to send test emails: ' + error.message);
+      addToast('Failed to send test emails: ' + error.message, 'error');
     }
   };
 
@@ -156,6 +167,9 @@ export function TestEmailModal({ isOpen, onClose, campaign, onTest, loading = fa
           </div>
         </form>
       </div>
+      
+      {/* Toast Container */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }
