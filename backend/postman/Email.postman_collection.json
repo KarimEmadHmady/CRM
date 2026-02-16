@@ -1,0 +1,195 @@
+{
+  "info": {
+    "_postman_id": "email-config-collection",
+    "name": "CRM - Email Configuration",
+    "description": "Email configuration endpoints for CRM System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Email Configs",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/email-config",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-config"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Email Config by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/email-config/{{configId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-config", "{{configId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Email Config",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Test Gmail Config\",\n    \"provider\": \"gmail\",\n    \"fromName\": \"Test Sender\",\n    \"fromEmail\": \"test@gmail.com\",\n    \"isActive\": false,\n    \"gmail\": {\n        \"email\": \"your-email@gmail.com\",\n        \"password\": \"your-app-password\"\n    },\n    \"testEmail\": \"test@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/email-config",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-config"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Email Config",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Updated Gmail Config\",\n    \"provider\": \"gmail\",\n    \"fromName\": \"Updated Sender\",\n    \"fromEmail\": \"updated@gmail.com\",\n    \"isActive\": true,\n    \"gmail\": {\n        \"email\": \"your-email@gmail.com\",\n        \"password\": \"your-app-password\"\n    },\n    \"testEmail\": \"test@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/email-config/{{configId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-config", "{{configId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Test Email Config",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"testEmail\": \"your-test-email@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/email-config/{{configId}}/test",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-config", "{{configId}}", "test"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Set Active Email Config",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/email-config/{{configId}}/set-active",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-config", "{{configId}}", "set-active"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Email Config",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/email-config/{{configId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-config", "{{configId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Email Config Stats",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/email-config/{{configId}}/stats",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "email-config", "{{configId}}", "stats"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "configId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

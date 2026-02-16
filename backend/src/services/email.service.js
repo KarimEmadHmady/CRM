@@ -2,14 +2,14 @@ import nodemailer from "nodemailer";
 import { EmailCampaign } from "../modles/emailCampaign.model.js";
 import { Customer } from "../modles/customer.model.js";
 import { Notification } from "../modles/notification.model.js";
+import { EmailConfig } from "../modles/emailConfig.model.js";
 import { v4 as uuid } from "uuid";
 import dotenv from "dotenv";
 
 dotenv.config()
 
-
-// Email transporter setup
-const transporter = nodemailer.createTransport({
+// Default email transporter setup (fallback)
+const defaultTransporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: process.env.EMAIL_USER,
@@ -17,10 +17,154 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// Cache for active transporters
+const transporterCache = new Map();
+
 export class EmailService {
 
-    static async sendEmail({ to, subject, text, template, html, metadata }) {
+    // Get or create transporter for a specific configuration
+    static async getTransporter(provider = null) {
         try {
+            // If no provider specified, try to get active config with priority (Gmail first, then SMTP) or use default
+            if (!provider) {
+                // Priority: Gmail > SMTP
+                const gmailConfig = await EmailConfig.findOne({ provider: 'gmail', isActive: true });
+                if (gmailConfig) {
+                    return this.getTransporterForConfig(gmailConfig);
+                }
+                
+                const smtpConfig = await EmailConfig.findOne({ provider: 'smtp', isActive: true });
+                if (smtpConfig) {
+                    return this.getTransporterForConfig(smtpConfig);
+                }
+                
+                return defaultTransporter;
+            }
+
+            // Get active config for specific provider
+            const activeConfig = await EmailConfig.findOne({ provider, isActive: true });
+            if (activeConfig) {
+                return this.getTransporterForConfig(activeConfig);
+            }
+
+            // Fallback to default transporter
+            return defaultTransporter;
+        } catch (error) {
+            console.error('Error getting transporter:', error);
+            return defaultTransporter;
+        }
+    }
+
+    // Get transporter for specific configuration
+    static getTransporterForConfig(config) {
+        const cacheKey = `${config.provider}_${config._id}`;
+        
+        // Check cache first
+        if (transporterCache.has(cacheKey)) {
+            return transporterCache.get(cacheKey);
+        }
+
+        // Create new transporter
+        const transporter = config.createTransporter();
+        
+        // Cache the transporter
+        transporterCache.set(cacheKey, transporter);
+        
+        return transporter;
+    }
+
+    // Send email with specific configuration
+    static async sendEmailWithConfig(config, { to, subject, text, template, html, metadata }) {
+        try {
+            const transporter = this.getTransporterForConfig(config);
+            
+            let finalHtml = html;
+            
+            // Generate HTML with category-specific content for welcome emails
+            if (template === 'welcome' && metadata) {
+                const { category, categorySpecificContent, categorySpecificImage, categorySpecificLink } = metadata;
+                
+                finalHtml = `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f9fa; direction: rtl;">
+                        <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <div style="text-align: center; margin-bottom: 30px;">
+                                <img src="${categorySpecificImage}" alt="Welcome Image" style="max-width: 200px; border-radius: 8px;">
+                            </div>
+                            <h2 style="color: #333; text-align: center; margin-bottom: 20px;">مرحباً بك في خدمتنا! / Welcome to Our Service!</h2>
+                            <div style="color: #666; line-height: 1.6; margin-bottom: 20px; text-align: right;">
+                                <p style="margin-bottom: 15px;"><strong>العربية:</strong></p>
+                                <p style="margin-bottom: 20px;">${text.split('\n\n')[0]}</p>
+                            </div>
+                            <div style="border-top: 2px solid #eee; margin: 20px 0;"></div>
+                            <div style="color: #666; line-height: 1.6; margin-bottom: 20px; text-align: left;">
+                                <p style="margin-bottom: 15px;"><strong>English:</strong></p>
+                                <p style="margin-bottom: 20px;">${text.split('\n\n')[1] || text}</p>
+                            </div>
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="${categorySpecificLink}" style="background-color: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                                    زيارة موقعنا / Visit Our Website
+                                </a>
+                            </div>
+                            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                                <p style="color: #888; font-size: 14px; margin: 0;">
+                                    مع أطيب التحيات / Best regards,<br>
+                                    <strong>${config.fromName || process.env.APP_NAME || 'System'}</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const mailOptions = {
+                from: {
+                    name: config.fromName || process.env.APP_NAME || 'System',
+                    address: config.fromEmail
+                },
+                to,
+                subject,
+                text,
+                html: finalHtml || this.generateTemplate(template, text, metadata),
+                // Add list headers for better email client support
+                list: {
+                    help: `mailto:${config.fromEmail}`,
+                    unsubscribe: `mailto:${config.fromEmail}?subject=Unsubscribe`
+                },
+                headers: {
+                    'X-Priority': '1',
+                    'X-Mailer': 'NodeMailer',
+                    'X-MS-Exchange-Organization-SCL': '-1',
+                    'X-Auto-Response-Suppress': 'All',
+                    'X-Google-App-Id': config.fromEmail
+                }
+            };
+
+            const result = await transporter.sendMail(mailOptions);
+            
+            // Update statistics
+            config.statistics.totalSent += 1;
+            config.statistics.lastUsed = new Date();
+            await config.save();
+            
+            return result;
+        } catch (error) {
+            console.error('Email sending error:', error);
+            
+            // Update failed statistics
+            config.statistics.totalFailed += 1;
+            await config.save();
+            
+            throw error;
+        }
+    }
+
+    static async sendEmail({ to, subject, text, template, html, metadata, provider }) {
+        try {
+            const transporter = await this.getTransporter(provider);
+            
+            // Get the config that's being used to update statistics
+            const config = await this.getConfigForUpdate(provider);
+            
             let finalHtml = html;
             
             // Generate HTML with category-specific content for welcome emails
@@ -61,8 +205,8 @@ export class EmailService {
 
             const mailOptions = {
                 from: {
-                    name: process.env.APP_NAME || 'System',
-                    address: process.env.EMAIL_USER
+                    name:  process.env.APP_NAME || 'System',
+                    address:  process.env.EMAIL_USER
                 },
                 to,
                 subject,
@@ -83,10 +227,59 @@ export class EmailService {
             };
 
             const result = await transporter.sendMail(mailOptions);
+            console.log(result);
+            // Update statistics
+            if (config) {
+                config.statistics.totalSent += 1;
+                config.statistics.lastUsed = new Date();
+                await config.save();
+            }
+            
             return result;
         } catch (error) {
             console.error('Email sending error:', error);
+            
+            // Update failed statistics
+            const config = await this.getConfigForUpdate(provider);
+            if (config) {
+                config.statistics.totalFailed += 1;
+                await config.save();
+            }
+            
             throw error;
+        }
+    }
+
+    // Get config for updating statistics (same as getTransporterForConfig but for updates)
+    static async getConfigForUpdate(provider = null) {
+        try {
+            // If no provider specified, try to get active config with priority (Gmail first, then SMTP) or use default
+            if (!provider) {
+                // Priority: Gmail > SMTP
+                const gmailConfig = await EmailConfig.findOne({ provider: 'gmail', isActive: true });
+                if (gmailConfig) {
+                    return gmailConfig;
+                }
+                
+                const smtpConfig = await EmailConfig.findOne({ provider: 'smtp', isActive: true });
+                if (smtpConfig) {
+                    return smtpConfig;
+                }
+                
+                return null;
+            }
+
+            // Get active config for specific provider
+            const activeConfig = await EmailConfig.findOne({ provider, isActive: true });
+            if (activeConfig) {
+                return activeConfig;
+            }
+
+            // Fallback to default
+            return null;
+        } catch (error) {
+            console.error('Error getting config for update:', error);
+            return null;
         }
     }
 
@@ -325,7 +518,7 @@ export class EmailService {
     static async updateEmailCampaignService(id, { name, subject, template, content, targetAudience, customRecipients, scheduledFor, status, settings, notes }) {
         const updateData = { name, subject, template, content, targetAudience, customRecipients, scheduledFor, status, settings, notes };
         Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
-        return await EmailCampaign.findByIdAndUpdate(id, updateData, { new: true });
+        return await EmailCampaign.findByIdAndUpdate(id, updateData, { returnDocument: 'after' });
     }
 
     static async deleteEmailCampaignService(id) {
@@ -433,7 +626,7 @@ export class EmailService {
                 status: 'scheduled',
                 scheduledFor 
             },
-            { new: true }
+            { returnDocument: 'after' }
         );
 
         return campaign;

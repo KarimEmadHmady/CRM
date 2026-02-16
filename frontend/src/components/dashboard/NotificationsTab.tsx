@@ -106,6 +106,9 @@ export function NotificationsTab() {
   const handleCreateNotification = async (notificationData: CreateNotificationData) => {
     try {
       await createNotification(notificationData);
+      setShowCreateModal(false);
+      await fetchNotifications(); // Refresh to show customer data
+      addToast('Notification created successfully!', 'success');
     } catch (error) {
       // Error is handled by the hook
     }
@@ -158,6 +161,8 @@ export function NotificationsTab() {
   const handleCreateSubscriptionExpiryNotifications = async (daysBefore: number) => {
     try {
       await createSubscriptionExpiryNotifications(daysBefore);
+      setShowSubscriptionExpiryModal(false);
+      await fetchNotifications(); // Refresh to show customer data
       addToast('Subscription expiry notifications created successfully!', 'success');
     } catch (error) {
       // Error is handled by the hook
@@ -167,6 +172,8 @@ export function NotificationsTab() {
   const handleCreatePaymentReminderNotifications = async (daysBefore: number) => {
     try {
       await createPaymentReminderNotifications(daysBefore);
+      setShowPaymentReminderModal(false);
+      await fetchNotifications(); // Refresh to show customer data
       addToast('Payment reminder notifications created successfully!', 'success');
     } catch (error) {
       // Error is handled by the hook
@@ -176,6 +183,8 @@ export function NotificationsTab() {
   const handleCreateWelcomeNotification = async (customerId: string, message: string) => {
     try {
       await createWelcomeNotification(customerId, message);
+      setShowWelcomeModal(false);
+      await fetchNotifications(); // Refresh to show customer data
       addToast('Welcome notification sent successfully!', 'success');
     } catch (error) {
       // Error is handled by the hook
@@ -648,6 +657,9 @@ export function NotificationsTab() {
                   try {
                     await bulkDeleteNotifications(selectedNotifications);
                     setShowBulkDeleteModal(false);
+                    setSelectedNotifications([]);
+                    await fetchNotifications();
+                    addToast(`Successfully deleted ${selectedNotifications.length} notifications`, 'success');
                   } catch (error) {
                     // Error is handled by the hook
                   }

@@ -19,7 +19,7 @@ export class CustomerService {
     static async updateCustomerService(id, { name, email, phone, address, category, status, notes, lastContactDate, totalSpent }) {
         const updateData = { name, email, phone, address, category, status, notes, lastContactDate, totalSpent };
         Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
-        return await Customer.findByIdAndUpdate(id, updateData, { new: true });
+        return await Customer.findByIdAndUpdate(id, updateData, { returnDocument: 'after' });
     }
 
     static async deleteCustomerService(id) {
@@ -47,7 +47,7 @@ export class CustomerService {
     }
 
     static async updateCustomerStatusService(id, status) {
-        return await Customer.findByIdAndUpdate(id, { status }, { new: true });
+        return await Customer.findByIdAndUpdate(id, { status }, { returnDocument: 'after' });
     }
 
     static async getCustomerStatsService() {

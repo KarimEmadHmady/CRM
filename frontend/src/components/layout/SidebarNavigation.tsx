@@ -12,7 +12,8 @@ import {
   Menu,
   X,
   User,
-  LogOut
+  LogOut,
+  Settings
 } from 'lucide-react';
 
 interface NavItem {
@@ -208,6 +209,14 @@ export function SidebarNavigation({ user, onLogout, onRegisterUser, onManageUser
                 >
                   <Users className="h-4 w-4" />
                   <span>Manage Users</span>
+                </button>
+
+                <button
+                  onClick={() => handleNavigation('/dashboard/email-config')}
+                  className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                >
+                  <Settings className="h-4 w-4" />
+                  <span>Email Configuration</span>
                 </button>
               </>
             )}

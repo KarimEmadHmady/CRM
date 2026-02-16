@@ -41,7 +41,7 @@ export class SubscriptionService {
             updateData.nextPaymentDate = endDate;
         }
         
-        return await Subscription.findByIdAndUpdate(id, updateData, { new: true }).populate('customer');
+        return await Subscription.findByIdAndUpdate(id, updateData, { returnDocument: 'after' }).populate('customer');
     }
 
     static async deleteSubscriptionService(id) {
@@ -116,7 +116,7 @@ export class SubscriptionService {
                 paymentStatus: 'pending',
                 isActive: true
             },
-            { new: true }
+            { returnDocument: 'after' }
         ).populate('customer');
 
         // Update customer status

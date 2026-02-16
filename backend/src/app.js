@@ -8,6 +8,7 @@ import customerRoutes from "./routes/customer.routes.js";
 import subscriptionRoutes from "./routes/subscription.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import emailCampaignRoutes from "./routes/emailCampaign.routes.js";
+import emailConfigRoutes from "./routes/emailConfig.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import { CronService } from "./services/cron.service.js";
 
@@ -40,6 +41,7 @@ app.use("/api/customers", customerRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/email-campaigns", emailCampaignRoutes);
+app.use("/api/email-config", emailConfigRoutes);
 
 // // Initialize cron jobs
 CronService.initializeCronJobs();

@@ -92,7 +92,7 @@ export class NotificationService {
             const notification = await Notification.findByIdAndUpdate(
                 id, 
                 updateData, 
-                { new: true }
+                { returnDocument: 'after' }
             ).populate('customer').populate('subscription');
 
             if (!notification) {
@@ -225,7 +225,7 @@ export class NotificationService {
                     sentAt: new Date(),
                     deliveryAttempts: (notification.deliveryAttempts || 0) + 1
                 },
-                { new: true }
+                { returnDocument: 'after' }
             ).populate('customer').populate('subscription');
 
             return updatedNotification;
