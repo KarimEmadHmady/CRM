@@ -42,34 +42,60 @@ export function CreateNotificationModal({
     }
   }, [isOpen, fetchCustomers, fetchSubscriptions]);
 
-  useEffect(() => {
-    // Filter subscriptions based on selected customer
-    if (formData.customer) {
-      const filtered = subscriptions.filter(sub => 
-        typeof sub.customer === 'string' 
-          ? sub.customer === formData.customer
-          : sub.customer._id === formData.customer
-      );
-      setFilteredSubscriptions(filtered);
-    } else {
-      setFilteredSubscriptions(subscriptions);
+useEffect(() => {
+  // Filter subscriptions based on selected customer
+  if (formData.customer) {
+    const filtered = subscriptions.filter(sub => {
+      // Handle both string and object cases
+      const subCustomerId = typeof sub.customer === 'string' 
+        ? sub.customer 
+        : sub.customer?._id;
+      
+      return subCustomerId === formData.customer;
+    });
+    
+    console.log('Filtered subscriptions:', filtered); // للـ debugging
+    setFilteredSubscriptions(filtered);
+    
+    // لو الـ subscription المختار مش موجود في الـ filtered list، امسحه
+    if (formData.subscription) {
+      const subscriptionExists = filtered.some(sub => sub._id === formData.subscription);
+      if (!subscriptionExists) {
+        setFormData(prev => ({ ...prev, subscription: '' }));
+      }
     }
-  }, [formData.customer, subscriptions]);
+  } else {
+    setFilteredSubscriptions(subscriptions);
+  }
+}, [formData.customer, formData.subscription, subscriptions]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
+const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const { name, value } = e.target;
+  
+  console.log(`Changing ${name} to:`, value); // للـ debugging
+  
+  setFormData(prev => {
+    // لما تختار customer جديد، امسح الـ subscription
+    if (name === 'customer') {
+      return {
+        ...prev,
+        customer: value,
+        subscription: '' // مهم: reset subscription
+      };
+    }
+    
+    // باقي الـ fields
+    return {
       ...prev,
-      [name]: value,
-      // Reset subscription when customer changes
-      subscription: name === 'customer' ? '' : prev.subscription
-    }));
-  };
+      [name]: value
+    };
+  });
+};
 
   if (!isOpen) return null;
 
