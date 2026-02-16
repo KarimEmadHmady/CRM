@@ -301,7 +301,7 @@ export class NotificationService {
                         subscription: subscription._id,
                         type: 'subscription_expiry',
                         title: 'تنبيه انتهاء الاشتراك / Subscription Expiring Soon',
-                        message: `عزيزي ${subscription.customer.name}، اشتراكك سينتهي في تاريخ ${subscription.endDate.toLocaleDateString()}. يرجى التجديد لمواصلة الاستمتاع بخدماتنا.\n\nDear ${subscription.customer.name}, your subscription will expire on ${subscription.endDate.toLocaleDateString()}. Please renew to continue enjoying our services.`,
+                        message: `عزيزي ${subscription.customer.name}، اشتراكك سينتهي في تاريخ ${subscription.endDate.toLocaleDateString()}. يرجى التجديد لمواصلة الاستفادة من بخدماتنا.\n\nDear ${subscription.customer.name}, your subscription will expire on ${subscription.endDate.toLocaleDateString()}. Please renew to continue enjoying our services.`,
                         scheduledFor: new Date(),
                         channel: 'email',
                         isAutomated: true,
@@ -436,11 +436,11 @@ export class NotificationService {
             let categorySpecificLink = '';
 
             if (customer.category === 'gym') {
-                categorySpecificContent = 'نحن متحمسون لمساعدتك في تحقيق أهدافك اللياقية! يقدم نادينا معدات حديثة ومدربين محترفين لدعم رحلتك.\n\nWe\'re excited to help you achieve your fitness goals! Our gym offers state-of-the-art equipment and professional trainers to support your journey.';
+                categorySpecificContent = 'نحن هنا لمساعدتك في إدارة ناديك بكفاءة أعلى! يتيح لك نظامنا إدارة الاشتراكات والعملاء والمدفوعات والتقارير بسهولة، مما يساعدك على تطوير عملك وتوفير وقتك للتركيز على نمو مشروعك.\n\nWe are here to help you manage your gym more efficiently! Our system allows you to manage memberships, clients, payments, and reports بسهولة, helping you grow your business and save time to focus on expansion.';
                 categorySpecificImage = 'https://gymcore-system.netlify.app/234345555.jpg';
                 categorySpecificLink = 'https://gymcore-system.netlify.app';
             } else if (customer.category === 'restaurant') {
-                categorySpecificContent = 'يسرنا أن نرحب بك في عائلتنا الطهوية! استمتع بأطباق رائعة وخدمة استثنائية في أجواء أنيقة.\n\nWe\'re delighted to welcome you to our culinary family! Experience exquisite dishes and exceptional service in an elegant atmosphere.';
+    categorySpecificContent = 'نساعدك على إدارة مطعمك بكفاءة واحترافية! يتيح لك نظامنا إدارة المنيو الإلكتروني والطلبات الأونلاين وخدمات التوصيل بسهولة، مع متابعة الطلبات والعملاء والتقارير في مكان واحد لتطوير عملك وزيادة أرباحك.\n\nWe help you manage your restaurant efficiently and professionally! Our system enables you to manage your digital menu, online orders, and delivery services easily, while tracking orders, customers, and reports in one place to grow your business and increase revenue.';
                 categorySpecificImage = 'https://qrx-menu.vercel.app/1.PNG';
                 categorySpecificLink = 'https://qrx-menu.vercel.app';
             } else {
