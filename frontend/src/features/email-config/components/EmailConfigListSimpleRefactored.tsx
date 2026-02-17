@@ -1,11 +1,11 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  TestTube, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  TestTube,
   Power,
   PowerOff,
   Mail,
@@ -14,7 +14,7 @@ import {
   ArrowLeft,
   Server,
   Clock
-  
+
 } from 'lucide-react';
 import { EmailConfig, EmailConfigFormData } from '../types/emailConfig.types';
 import { useEmailConfig } from '../hooks/useEmailConfig';
@@ -51,7 +51,7 @@ const CreateEmailConfigModal: React.FC<{
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const validation = validateEmailConfig(formData);
     if (!validation.isValid) {
       alert('Please fix the following errors:\n' + validation.errors.join('\n'));
@@ -64,7 +64,7 @@ const CreateEmailConfigModal: React.FC<{
         provider: formData.provider,
         fromName: formData.fromName,
         fromEmail: formData.fromEmail,
-        ...(formData.provider === 'gmail' 
+        ...(formData.provider === 'gmail'
           ? { gmail: formData.gmail }
           : { smtp: formData.smtp }
         )
@@ -93,7 +93,7 @@ const CreateEmailConfigModal: React.FC<{
             {config ? 'Update your email settings' : 'Configure a new email provider'}
           </p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {config && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
@@ -106,14 +106,14 @@ const CreateEmailConfigModal: React.FC<{
                 <div className="flex-1">
                   <h4 className="text-sm font-medium text-amber-800">Security Notice</h4>
                   <p className="text-sm text-amber-700 mt-1">
-                    For your security, sensitive fields like passwords and authentication credentials are hidden. 
+                    For your security, sensitive fields like passwords and authentication credentials are hidden.
                     You only need to re-enter them if you want to change them.
                   </p>
                 </div>
               </div>
             </div>
           )}
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-2">
               Configuration Name
@@ -183,8 +183,8 @@ const CreateEmailConfigModal: React.FC<{
                   <input
                     type="email"
                     value={formData.gmail.email}
-                    onChange={(e) => setFormData({ 
-                      ...formData, 
+                    onChange={(e) => setFormData({
+                      ...formData,
                       gmail: { ...formData.gmail, email: e.target.value }
                     })}
                     placeholder={config ? "Enter new email or leave unchanged" : "your-email@gmail.com"}
@@ -205,8 +205,8 @@ const CreateEmailConfigModal: React.FC<{
                   <input
                     type="password"
                     value={formData.gmail.password}
-                    onChange={(e) => setFormData({ 
-                      ...formData, 
+                    onChange={(e) => setFormData({
+                      ...formData,
                       gmail: { ...formData.gmail, password: e.target.value }
                     })}
                     placeholder={config ? "••••••••••••••••" : "••••••••••••••••"}
@@ -235,8 +235,8 @@ const CreateEmailConfigModal: React.FC<{
                   <input
                     type="text"
                     value={formData.smtp.host}
-                    onChange={(e) => setFormData({ 
-                      ...formData, 
+                    onChange={(e) => setFormData({
+                      ...formData,
                       smtp: { ...formData.smtp, host: e.target.value }
                     })}
                     placeholder="smtp.example.com"
@@ -251,8 +251,8 @@ const CreateEmailConfigModal: React.FC<{
                   <input
                     type="number"
                     value={formData.smtp.port}
-                    onChange={(e) => setFormData({ 
-                      ...formData, 
+                    onChange={(e) => setFormData({
+                      ...formData,
                       smtp: { ...formData.smtp, port: parseInt(e.target.value) }
                     })}
                     placeholder="587"
@@ -266,8 +266,8 @@ const CreateEmailConfigModal: React.FC<{
                   type="checkbox"
                   id="secure"
                   checked={formData.smtp.secure}
-                  onChange={(e) => setFormData({ 
-                    ...formData, 
+                  onChange={(e) => setFormData({
+                    ...formData,
                     smtp: { ...formData.smtp, secure: e.target.checked }
                   })}
                   className="w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900"
@@ -285,10 +285,10 @@ const CreateEmailConfigModal: React.FC<{
                   <input
                     type="text"
                     value={formData.smtp.auth.user}
-                    onChange={(e) => setFormData({ 
-                      ...formData, 
-                      smtp: { 
-                        ...formData.smtp, 
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      smtp: {
+                        ...formData.smtp,
                         auth: { ...formData.smtp.auth, user: e.target.value }
                       }
                     })}
@@ -310,10 +310,10 @@ const CreateEmailConfigModal: React.FC<{
                   <input
                     type="password"
                     value={formData.smtp.auth.pass}
-                    onChange={(e) => setFormData({ 
-                      ...formData, 
-                      smtp: { 
-                        ...formData.smtp, 
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      smtp: {
+                        ...formData.smtp,
                         auth: { ...formData.smtp.auth, pass: e.target.value }
                       }
                     })}
@@ -401,7 +401,7 @@ const TestEmailModal: React.FC<{
             </div>
           </div>
         </div>
-        
+
         <div className="p-6 space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-2">
@@ -417,7 +417,7 @@ const TestEmailModal: React.FC<{
             />
           </div>
         </div>
-        
+
         <div className="border-t border-gray-200 p-6 flex gap-3">
           <button
             onClick={handleTest}
@@ -477,8 +477,8 @@ export const EmailConfigListSimpleRefactored: React.FC = () => {
 
   if (loading) {
     return (
-      <LoadingSpinner 
-        text="Loading email configurations..." 
+      <LoadingSpinner
+        text="Loading email configurations..."
         size='lg'
       />
     );
@@ -488,29 +488,40 @@ export const EmailConfigListSimpleRefactored: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
+
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+            {/* Title */}
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Email Configuration</h1>
-              <p className="mt-2 text-sm text-gray-600">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Email Configuration</h1>
+              <p className="mt-1 text-sm text-gray-600">
                 Manage your email sending configurations and monitor performance
               </p>
             </div>
-            <div className="flex gap-3">
+
+            {/* Actions */}
+            <div className="flex items-center gap-2 sm:gap-3">
+
+              {/* Back — icon only on mobile */}
               <button
                 onClick={() => router.push('/dashboard')}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                className="inline-flex items-center gap-2 px-3 sm:px-4 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
               >
-                <ArrowLeft className="w-4 h-4" />
-                Back
+                <ArrowLeft className="w-4 h-4 shrink-0" />
+                <span className="hidden sm:inline">Back</span>
               </button>
-              <button 
+
+              {/* Add Configuration — shortened on mobile */}
+              <button
                 onClick={() => setShowCreateModal(true)}
-                className="inline-flex items-center gap-2 bg-gray-900 text-white hover:bg-gray-800 px-6 py-2.5 rounded-lg font-medium transition-colors"
+                className="inline-flex items-center gap-2 bg-gray-900 text-white hover:bg-gray-800 px-4 sm:px-6 py-2.5 rounded-lg font-medium transition-colors"
               >
-                <Plus className="w-5 h-5" />
-                Add Configuration
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                <span className="sm:hidden">Add</span>
+                <span className="hidden sm:inline">Add Configuration</span>
               </button>
+
             </div>
           </div>
         </div>
@@ -528,7 +539,7 @@ export const EmailConfigListSimpleRefactored: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-green-50 rounded-lg">
@@ -542,7 +553,7 @@ export const EmailConfigListSimpleRefactored: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-purple-50 rounded-lg">
@@ -556,7 +567,7 @@ export const EmailConfigListSimpleRefactored: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-red-50 rounded-lg">
@@ -583,7 +594,7 @@ export const EmailConfigListSimpleRefactored: React.FC = () => {
               <p className="text-gray-600 mb-8">
                 Configure your email settings to start sending campaigns and notifications to your customers.
               </p>
-              <button 
+              <button
                 onClick={() => setShowCreateModal(true)}
                 className="inline-flex items-center gap-2 bg-gray-900 text-white hover:bg-gray-800 px-6 py-3 rounded-lg font-medium transition-colors"
               >
@@ -595,8 +606,8 @@ export const EmailConfigListSimpleRefactored: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {configs.map((config) => (
-              <div 
-                key={config._id} 
+              <div
+                key={config._id}
                 className="bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-shadow duration-200"
               >
                 {/* Card Header */}
@@ -615,7 +626,7 @@ export const EmailConfigListSimpleRefactored: React.FC = () => {
                         <p className="text-sm text-gray-500 mt-0.5 capitalize">{config.provider}</p>
                       </div>
                     </div>
-                    
+
                     {config.isActive ? (
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
                         <Power className="w-3 h-3" />
@@ -675,7 +686,7 @@ export const EmailConfigListSimpleRefactored: React.FC = () => {
                     <Edit className="w-4 h-4" />
                     Edit
                   </button>
-                  
+
                   <button
                     onClick={() => setShowTestModal(config._id)}
                     className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-colors"
@@ -686,11 +697,10 @@ export const EmailConfigListSimpleRefactored: React.FC = () => {
 
                   <button
                     onClick={() => handleToggleActive(config._id)}
-                    className={`px-3 py-2 text-sm font-medium border rounded-lg transition-colors ${
-                      config.isActive
+                    className={`px-3 py-2 text-sm font-medium border rounded-lg transition-colors ${config.isActive
                         ? 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100'
                         : 'bg-white border-gray-300 hover:bg-gray-50 hover:border-gray-400'
-                    }`}
+                      }`}
                     title={config.isActive ? "Deactivate" : "Set as active"}
                   >
                     {config.isActive ? (

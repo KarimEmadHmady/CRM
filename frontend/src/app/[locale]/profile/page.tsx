@@ -48,37 +48,47 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900">CRM System - Profile</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <User className="h-5 w-5 text-gray-600" />
-                <span className="text-sm text-gray-700">
-                  Welcome, {user?.username}
-                </span>
-              </div>
-              <button
-                onClick={() => router.push('/dashboard')}
-                className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span>Back to Dashboard</span>
-              </button>
-              <button
-                onClick={handleLogout}
-                className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                <LogOut className="h-4 w-4" />
-                <span>Logout</span>
-              </button>
-            </div>
-          </div>
+
+<nav className="bg-white shadow">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex justify-between items-center h-16">
+
+      {/* Title */}
+      <h1 className="text-base sm:text-xl font-semibold text-gray-900">
+        <span className="hidden sm:inline">CRM System - </span>Profile
+      </h1>
+
+      {/* Right side */}
+      <div className="flex items-center gap-2 sm:gap-4">
+
+        {/* Welcome — hidden on mobile */}
+        <div className="hidden sm:flex items-center gap-2">
+          <User className="h-5 w-5 text-gray-600 shrink-0" />
+          <span className="text-sm text-gray-700">Welcome, {user?.username}</span>
         </div>
-      </nav>
+
+        {/* Back — icon only on mobile */}
+        <button
+          onClick={() => router.push('/dashboard')}
+          className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4 shrink-0" />
+          <span className="hidden sm:inline">Back to Dashboard</span>
+        </button>
+
+        {/* Logout — icon only on mobile */}
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-colors"
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          <span className="hidden sm:inline">Logout</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+</nav>
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">

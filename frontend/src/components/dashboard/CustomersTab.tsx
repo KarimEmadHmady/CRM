@@ -327,117 +327,174 @@ export function CustomersTab() {
       </div>
 
       {/* Customers Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Customer
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Category
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total Spent
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-blue-600" />
-                      <span>Loading customers...</span>
-                    </div>
-                  </td>
-                </tr>
-              ) : filteredCustomers.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                    <div className="flex flex-col items-center space-y-2">
-                      <UserCheck className="h-12 w-12 text-gray-300" />
-                      <p>No customers found</p>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                filteredCustomers.map((customer) => (
-                  <tr key={customer._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{customer.name}</div>
-                        <div className="text-sm text-gray-500">{customer.email}</div>
-                        <div className="text-sm text-gray-500">{customer.phone}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getCategoryColor(customer.category)}`}>
-                        {customer.category.charAt(0).toUpperCase() + customer.category.slice(1)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(customer.status)}`}>
-                        {customer.status.replace('_', ' ').charAt(0).toUpperCase() + customer.status.replace('_', ' ').slice(1)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${customer.totalSpent.toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(customer.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex items-center justify-end space-x-2">
-                        <button
-                          onClick={() => handleViewCustomer(customer)}
-                          className="text-gray-400 hover:text-gray-600"
-                          title="View Details"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleEditCustomer(customer)}
-                          className="text-gray-400 hover:text-gray-600"
-                          title="Edit Customer"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleToggleStatus(customer)}
-                          className="text-blue-600 hover:text-blue-800"
-                          title="Change Status"
-                        >
-                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={() => handleDeleteCustomer(customer)}
-                          className="text-gray-400 hover:text-red-600"
-                          title="Delete Customer"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+
+<div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+
+  {/* ── DESKTOP TABLE (hidden on mobile) ─────────────── */}
+  <div className="hidden md:block overflow-x-auto">
+    <table className="w-full">
+      <thead className="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Spent</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {loading ? (
+          <tr>
+            <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+              <div className="flex items-center justify-center space-x-2">
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-blue-600" />
+                <span>Loading customers...</span>
+              </div>
+            </td>
+          </tr>
+        ) : filteredCustomers.length === 0 ? (
+          <tr>
+            <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+              <div className="flex flex-col items-center space-y-2">
+                <UserCheck className="h-12 w-12 text-gray-300" />
+                <p>No customers found</p>
+              </div>
+            </td>
+          </tr>
+        ) : (
+          filteredCustomers.map((customer) => (
+            <tr key={customer._id} className="hover:bg-gray-50">
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div>
+                  <div className="text-sm font-medium text-gray-900">{customer.name}</div>
+                  <div className="text-sm text-gray-500">{customer.email}</div>
+                  <div className="text-sm text-gray-500">{customer.phone}</div>
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getCategoryColor(customer.category)}`}>
+                  {customer.category.charAt(0).toUpperCase() + customer.category.slice(1)}
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(customer.status)}`}>
+                  {customer.status.replace('_', ' ').charAt(0).toUpperCase() + customer.status.replace('_', ' ').slice(1)}
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                ${customer.totalSpent.toLocaleString()}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {new Date(customer.createdAt).toLocaleDateString()}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div className="flex items-center justify-end space-x-2">
+                  <button onClick={() => handleViewCustomer(customer)} className="text-gray-400 hover:text-gray-600" title="View Details">
+                    <Eye className="h-4 w-4" />
+                  </button>
+                  <button onClick={() => handleEditCustomer(customer)} className="text-gray-400 hover:text-gray-600" title="Edit Customer">
+                    <Edit className="h-4 w-4" />
+                  </button>
+                  <button onClick={() => handleToggleStatus(customer)} className="text-blue-600 hover:text-blue-800" title="Change Status">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                  </button>
+                  <button onClick={() => handleDeleteCustomer(customer)} className="text-gray-400 hover:text-red-600" title="Delete Customer">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+
+  {/* ── MOBILE CARDS (hidden on desktop) ─────────────── */}
+  <div className="md:hidden">
+    {loading ? (
+      <div className="flex items-center justify-center gap-2 py-12 text-gray-500">
+        <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-blue-600" />
+        <span className="text-sm">Loading customers...</span>
       </div>
+    ) : filteredCustomers.length === 0 ? (
+      <div className="flex flex-col items-center gap-2 py-12 text-gray-500">
+        <UserCheck className="h-12 w-12 text-gray-300" />
+        <p className="text-sm">No customers found</p>
+      </div>
+    ) : (
+      <ul className="divide-y divide-gray-100">
+        {filteredCustomers.map((customer) => (
+          <li key={customer._id} className="p-4 hover:bg-gray-50 transition-colors">
+
+            {/* Top row: name + actions */}
+            <div className="flex items-start justify-between gap-2 mb-3">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-gray-900 truncate">{customer.name}</p>
+                <p className="text-xs text-gray-500 truncate">{customer.email}</p>
+                {customer.phone && (
+                  <p className="text-xs text-gray-400">{customer.phone}</p>
+                )}
+              </div>
+
+              {/* Action buttons — compact row */}
+              <div className="flex items-center gap-3 shrink-0">
+                <button onClick={() => handleViewCustomer(customer)} className="text-gray-400 hover:text-gray-600" title="View">
+                  <Eye className="h-4 w-4" />
+                </button>
+                <button onClick={() => handleEditCustomer(customer)} className="text-gray-400 hover:text-gray-600" title="Edit">
+                  <Edit className="h-4 w-4" />
+                </button>
+                <button onClick={() => handleToggleStatus(customer)} className="text-blue-500 hover:text-blue-700" title="Change Status">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                </button>
+                <button onClick={() => handleDeleteCustomer(customer)} className="text-gray-400 hover:text-red-500" title="Delete">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Bottom row: badges + spent + date */}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Category badge */}
+              <span className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${getCategoryColor(customer.category)}`}>
+                {customer.category.charAt(0).toUpperCase() + customer.category.slice(1)}
+              </span>
+
+              {/* Status badge */}
+              <span className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${getStatusColor(customer.status)}`}>
+                {customer.status.replace('_', ' ').charAt(0).toUpperCase() + customer.status.replace('_', ' ').slice(1)}
+              </span>
+
+              {/* Spacer */}
+              <span className="flex-1" />
+
+              {/* Total spent */}
+              <span className="text-xs font-medium text-gray-700">
+                ${customer.totalSpent.toLocaleString()}
+              </span>
+
+              {/* Separator dot */}
+              <span className="text-gray-300 text-xs">·</span>
+
+              {/* Date */}
+              <span className="text-xs text-gray-400">
+                {new Date(customer.createdAt).toLocaleDateString()}
+              </span>
+            </div>
+
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+
+</div>
 
       {/* Create Customer Modal */}
       <CreateCustomerModal

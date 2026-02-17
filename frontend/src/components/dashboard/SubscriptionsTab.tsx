@@ -59,16 +59,16 @@ export function SubscriptionsTab() {
     // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(subscription => {
-        const customerName = typeof subscription.customer === 'string' 
-          ? subscription.customer 
+        const customerName = typeof subscription.customer === 'string'
+          ? subscription.customer
           : subscription.customer?.name || '';
-        const customerEmail = typeof subscription.customer === 'string' 
-          ? '' 
+        const customerEmail = typeof subscription.customer === 'string'
+          ? ''
           : subscription.customer?.email || '';
-        
+
         return customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-               customerEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-               subscription.packageType.toLowerCase().includes(searchTerm.toLowerCase());
+          customerEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          subscription.packageType.toLowerCase().includes(searchTerm.toLowerCase());
       });
     }
 
@@ -191,8 +191,8 @@ export function SubscriptionsTab() {
   };
 
   const handleSelectSubscription = (subscriptionId: string) => {
-    setSelectedSubscriptions(prev => 
-      prev.includes(subscriptionId) 
+    setSelectedSubscriptions(prev =>
+      prev.includes(subscriptionId)
         ? prev.filter(id => id !== subscriptionId)
         : [...prev, subscriptionId]
     );
@@ -397,8 +397,11 @@ export function SubscriptionsTab() {
       </div>
 
       {/* Subscriptions Table */}
+
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
+
+        {/* ── DESKTOP TABLE (hidden on mobile) ─────────────── */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
@@ -410,27 +413,13 @@ export function SubscriptionsTab() {
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Customer
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Package
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Payment
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Period
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Package</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Period</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -464,17 +453,12 @@ export function SubscriptionsTab() {
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {typeof subscription.customer === 'string' 
-                            ? subscription.customer 
-                            : subscription.customer?.name || 'Unknown'
-                          }
-                        </div>
-                        {typeof subscription.customer !== 'string' && subscription.customer && (
-                          <div className="text-sm text-gray-500">{subscription.customer.email}</div>
-                        )}
+                      <div className="text-sm font-medium text-gray-900">
+                        {typeof subscription.customer === 'string' ? subscription.customer : subscription.customer?.name || 'Unknown'}
                       </div>
+                      {typeof subscription.customer !== 'string' && subscription.customer && (
+                        <div className="text-sm text-gray-500">{subscription.customer.email}</div>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPackageColor(subscription.packageType)}`}>
@@ -486,17 +470,11 @@ export function SubscriptionsTab() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="space-y-1">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          subscription.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${subscription.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                           {subscription.isActive ? 'Active' : 'Inactive'}
                         </span>
-                        {isExpiringSoon(subscription.endDate) && (
-                          <div className="text-xs text-orange-600">Expiring Soon</div>
-                        )}
-                        {isExpired(subscription.endDate) && (
-                          <div className="text-xs text-red-600">Expired</div>
-                        )}
+                        {isExpiringSoon(subscription.endDate) && <div className="text-xs text-orange-600">Expiring Soon</div>}
+                        {isExpired(subscription.endDate) && <div className="text-xs text-red-600">Expired</div>}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -505,50 +483,16 @@ export function SubscriptionsTab() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <div>
-                        {new Date(subscription.startDate).toLocaleDateString()}
-                      </div>
-                      <div className="text-xs">
-                        to {new Date(subscription.endDate).toLocaleDateString()}
-                      </div>
+                      <div>{new Date(subscription.startDate).toLocaleDateString()}</div>
+                      <div className="text-xs">to {new Date(subscription.endDate).toLocaleDateString()}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
-                        <button
-                          onClick={() => handleViewSubscription(subscription)}
-                          className="text-gray-400 hover:text-gray-600"
-                          title="View Details"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleEditSubscription(subscription)}
-                          className="text-gray-400 hover:text-gray-600"
-                          title="Edit Subscription"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleUpdatePaymentStatusClick(subscription)}
-                          className="text-gray-400 hover:text-blue-600"
-                          title="Update Payment Status"
-                        >
-                          <CreditCard className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleRenewSubscription(subscription)}
-                          className="text-gray-400 hover:text-green-600"
-                          title="Renew Subscription"
-                        >
-                          <RefreshCw className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteSubscription(subscription)}
-                          className="text-gray-400 hover:text-red-600"
-                          title="Delete Subscription"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                        <button onClick={() => handleViewSubscription(subscription)} className="text-gray-400 hover:text-gray-600" title="View Details">          <Eye className="h-4 w-4" /></button>
+                        <button onClick={() => handleEditSubscription(subscription)} className="text-gray-400 hover:text-gray-600" title="Edit Subscription">     <Edit className="h-4 w-4" /></button>
+                        <button onClick={() => handleUpdatePaymentStatusClick(subscription)} className="text-gray-400 hover:text-blue-600" title="Update Payment Status"> <CreditCard className="h-4 w-4" /></button>
+                        <button onClick={() => handleRenewSubscription(subscription)} className="text-gray-400 hover:text-green-600" title="Renew Subscription">    <RefreshCw className="h-4 w-4" /></button>
+                        <button onClick={() => handleDeleteSubscription(subscription)} className="text-gray-400 hover:text-red-600" title="Delete Subscription">   <Trash2 className="h-4 w-4" /></button>
                       </div>
                     </td>
                   </tr>
@@ -557,6 +501,107 @@ export function SubscriptionsTab() {
             </tbody>
           </table>
         </div>
+
+        {/* ── MOBILE CARDS (hidden on desktop) ─────────────── */}
+        <div className="md:hidden">
+
+          {/* Mobile select-all bar */}
+          {filteredSubscriptions.length > 0 && !loading && (
+            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border-b border-gray-200">
+              <input
+                type="checkbox"
+                onChange={handleSelectAll}
+                checked={selectedSubscriptions.length === filteredSubscriptions.length && filteredSubscriptions.length > 0}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-xs text-gray-500">
+                {selectedSubscriptions.length > 0 ? `${selectedSubscriptions.length} selected` : 'Select all'}
+              </span>
+            </div>
+          )}
+
+          {loading ? (
+            <div className="flex items-center justify-center gap-2 py-12 text-gray-500">
+              <RefreshCw className="h-5 w-5 animate-spin" />
+              <span className="text-sm">Loading subscriptions...</span>
+            </div>
+          ) : filteredSubscriptions.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 py-12 text-gray-500">
+              <CreditCard className="h-12 w-12 text-gray-300" />
+              <p className="text-sm">No subscriptions found</p>
+            </div>
+          ) : (
+            <ul className="divide-y divide-gray-100">
+              {filteredSubscriptions.map((subscription) => {
+                const customerName = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer?.name || 'Unknown';
+                const customerEmail = typeof subscription.customer !== 'string' ? subscription.customer?.email : null;
+                const expiring = isExpiringSoon(subscription.endDate);
+                const expired = isExpired(subscription.endDate);
+
+                return (
+                  <li key={subscription._id} className="p-4 hover:bg-gray-50 transition-colors">
+
+                    {/* Row 1: checkbox + customer + active badge */}
+                    <div className="flex items-start gap-3 mb-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedSubscriptions.includes(subscription._id)}
+                        onChange={() => handleSelectSubscription(subscription._id)}
+                        className="mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-sm font-semibold text-gray-900 truncate">{customerName}</p>
+                          <span className={`shrink-0 inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${subscription.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            {subscription.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
+                        {customerEmail && (
+                          <p className="text-xs text-gray-400 truncate">{customerEmail}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Row 2: package + payment + price */}
+                    <div className="ml-7 flex flex-wrap items-center gap-2 mb-2">
+                      <span className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${getPackageColor(subscription.packageType)}`}>
+                        {subscription.packageType.charAt(0).toUpperCase() + subscription.packageType.slice(1)}
+                      </span>
+                      <span className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${getPaymentStatusColor(subscription.paymentStatus)}`}>
+                        {subscription.paymentStatus.charAt(0).toUpperCase() + subscription.paymentStatus.slice(1)}
+                      </span>
+                      <span className="ml-auto text-sm font-semibold text-gray-800">${subscription.price}</span>
+                    </div>
+
+                    {/* Row 3: period + expiry warnings */}
+                    <div className="ml-7 flex items-center gap-2 mb-3">
+                      <span className="text-xs text-gray-400">
+                        {new Date(subscription.startDate).toLocaleDateString()} → {new Date(subscription.endDate).toLocaleDateString()}
+                      </span>
+                      {expiring && !expired && (
+                        <span className="text-xs font-medium text-orange-600">· Expiring Soon</span>
+                      )}
+                      {expired && (
+                        <span className="text-xs font-medium text-red-600">· Expired</span>
+                      )}
+                    </div>
+
+                    {/* Row 4: actions */}
+                    <div className="ml-7 flex items-center gap-3 pt-2 border-t border-gray-100">
+                      <button onClick={() => handleViewSubscription(subscription)} className="text-gray-400 hover:text-gray-600" title="View Details">          <Eye className="h-4 w-4" /></button>
+                      <button onClick={() => handleEditSubscription(subscription)} className="text-gray-400 hover:text-gray-600" title="Edit">                  <Edit className="h-4 w-4" /></button>
+                      <button onClick={() => handleUpdatePaymentStatusClick(subscription)} className="text-gray-400 hover:text-blue-600" title="Update Payment">        <CreditCard className="h-4 w-4" /></button>
+                      <button onClick={() => handleRenewSubscription(subscription)} className="text-gray-400 hover:text-green-600" title="Renew">                 <RefreshCw className="h-4 w-4" /></button>
+                      <button onClick={() => handleDeleteSubscription(subscription)} className="ml-auto text-gray-400 hover:text-red-600" title="Delete">          <Trash2 className="h-4 w-4" /></button>
+                    </div>
+
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+
       </div>
 
       {/* Create Subscription Modal */}

@@ -101,7 +101,7 @@ export default function UsersPage() {
 
   const confirmDeleteUser = async () => {
     if (!userToDelete) return;
-    
+
     try {
       console.log('🗑️ Deleting user:', userToDelete._id);
       await usersApi.deleteUser(userToDelete._id);
@@ -130,16 +130,16 @@ export default function UsersPage() {
     try {
       console.log('🔄 Updating user:', userToEdit._id);
       console.log('📝 New data:', editedUser);
-      
+
       await usersApi.updateUser(userToEdit._id, editedUser);
-      
+
       console.log('✅ User updated successfully');
-      
+
       // Close modal first for better UX
       setShowEditModal(false);
       setUserToEdit(null);
       setEditedUser(null);
-      
+
       // Refresh users list after a small delay
       setTimeout(async () => {
         await safeFetchUsers();
@@ -194,30 +194,39 @@ export default function UsersPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
+
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center">
-                <Users className="h-6 w-6 mr-2 text-blue-600" />
-                Users Management
-              </h1>
-            </div>
-            <div className="flex items-center space-x-3">
+
+            {/* Title */}
+            <h1 className="text-base sm:text-xl font-semibold text-gray-900 flex items-center">
+              <Users className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-blue-600 shrink-0" />
+              <span className="hidden sm:inline">Users Management</span>
+              <span className="sm:hidden">Users</span>
+            </h1>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2">
+
+              {/* Dashboard — icon only on mobile, icon+text on desktop */}
               <button
                 onClick={() => router.push('/dashboard')}
-                className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
-                <Users className="h-4 w-4" />
-                <span>Dashboard</span>
+                <Users className="h-4 w-4 shrink-0" />
+                <span className="hidden sm:inline">Dashboard</span>
               </button>
+
+              {/* Profile — icon only on mobile, icon+text on desktop */}
               <button
                 onClick={() => router.push('/profile')}
-                className="flex items-center space-x-2 bg-black hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+                className="flex items-center gap-2 bg-black hover:bg-gray-700 text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
-                <UserCheck className="h-4 w-4" />
-                <span>Profile</span>
+                <UserCheck className="h-4 w-4 shrink-0" />
+                <span className="hidden sm:inline">Profile</span>
               </button>
+
             </div>
           </div>
         </div>
@@ -259,47 +268,35 @@ export default function UsersPage() {
           </div>
 
           {/* Users Table */}
+
           <div className="bg-white shadow rounded-lg overflow-hidden">
-            <div className="overflow-x-auto">
+
+            {/* ── DESKTOP TABLE (hidden on mobile) ─────────────── */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      User
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Role
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Last Login
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredUsers.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                        {searchTerm || selectedRole !== 'all' 
-                          ? 'No users found matching your filters.' 
-                          : 'No users available.'}
+                        {searchTerm || selectedRole !== 'all' ? 'No users found matching your filters.' : 'No users available.'}
                       </td>
                     </tr>
                   ) : (
                     filteredUsers.map((u) => (
                       <tr key={u._id || `user-${u.username}`} className="hover:bg-gray-50 transition-colors">
-                        {/* User Column */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-black to-gray-600 flex items-center justify-center shadow-sm">
+                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-black to-gray-600 flex items-center justify-center shadow-sm shrink-0">
                               <span className="text-sm font-semibold text-white">
                                 {u.username?.charAt(0)?.toUpperCase() || 'U'}
                               </span>
@@ -309,62 +306,38 @@ export default function UsersPage() {
                             </div>
                           </div>
                         </td>
-
-                        {/* Email Column */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-600">{u.email}</div>
                         </td>
-
-                        {/* Role Column */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleColor(u.role)}`}>
                             {u.role}
                           </span>
                         </td>
-
-                        {/* Status Column */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(u.isActive)}`}>
                             {u.isActive ? 'Active' : 'Inactive'}
                           </span>
                         </td>
-
-                        {/* Last Login Column */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center text-sm text-gray-500">
                             <Clock className="h-4 w-4 mr-1.5" />
                             {u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : 'Never'}
                           </div>
                         </td>
-
-                        {/* Actions Column */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center space-x-3">
-                            <button
-                              onClick={() => handleEditUser(u)}
-                              className="text-blue-600 hover:text-blue-900 transition-colors p-1 hover:bg-blue-50 rounded"
-                              title="Edit user"
-                            >
+                            <button onClick={() => handleEditUser(u)} className="text-blue-600 hover:text-blue-900 transition-colors p-1 hover:bg-blue-50 rounded" title="Edit user">
                               <Edit className="h-4 w-4" />
                             </button>
-
                             <button
                               onClick={() => handleToggleUserStatus(u._id)}
-                              className={`transition-colors p-1 rounded ${
-                                u.isActive 
-                                  ? 'text-orange-600 hover:text-orange-900 hover:bg-orange-50' 
-                                  : 'text-green-600 hover:text-green-900 hover:bg-green-50'
-                              }`}
+                              className={`transition-colors p-1 rounded ${u.isActive ? 'text-orange-600 hover:text-orange-900 hover:bg-orange-50' : 'text-green-600 hover:text-green-900 hover:bg-green-50'}`}
                               title={u.isActive ? 'Deactivate user' : 'Activate user'}
                             >
                               <Shield className="h-4 w-4" />
                             </button>
-
-                            <button
-                              onClick={() => handleDeleteUser(u)}
-                              className="text-red-600 hover:text-red-900 transition-colors p-1 hover:bg-red-50 rounded"
-                              title="Delete user"
-                            >
+                            <button onClick={() => handleDeleteUser(u)} className="text-red-600 hover:text-red-900 transition-colors p-1 hover:bg-red-50 rounded" title="Delete user">
                               <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
@@ -375,6 +348,81 @@ export default function UsersPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* ── MOBILE CARDS (hidden on desktop) ─────────────── */}
+            <div className="md:hidden">
+              {filteredUsers.length === 0 ? (
+                <div className="px-4 py-12 text-center text-sm text-gray-500">
+                  {searchTerm || selectedRole !== 'all' ? 'No users found matching your filters.' : 'No users available.'}
+                </div>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {filteredUsers.map((u) => (
+                    <li key={u._id || `user-${u.username}`} className="p-4 hover:bg-gray-50 transition-colors">
+
+                      {/* Row 1: avatar + name + email + status */}
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-black to-gray-600 flex items-center justify-center shadow-sm shrink-0">
+                          <span className="text-sm font-semibold text-white">
+                            {u.username?.charAt(0)?.toUpperCase() || 'U'}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-sm font-semibold text-gray-900 truncate">{u.username}</p>
+                            <span className={`shrink-0 px-2 py-0.5 inline-flex text-xs font-semibold rounded-full ${getStatusColor(u.isActive)}`}>
+                              {u.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-400 truncate">{u.email}</p>
+                        </div>
+                      </div>
+
+                      {/* Row 2: role + last login */}
+                      <div className="flex items-center justify-between mb-3 pl-13">
+                        <span className={`px-2 py-0.5 inline-flex text-xs font-semibold rounded-full ${getRoleColor(u.role)}`}>
+                          {u.role}
+                        </span>
+                        <div className="flex items-center gap-1 text-xs text-gray-400">
+                          <Clock className="h-3 w-3" />
+                          {u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : 'Never logged in'}
+                        </div>
+                      </div>
+
+                      {/* Row 3: actions */}
+                      <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
+                        <button
+                          onClick={() => handleEditUser(u)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded transition-colors"
+                        >
+                          <Edit className="h-3.5 w-3.5" />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleToggleUserStatus(u._id)}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded transition-colors ${u.isActive
+                              ? 'text-orange-600 hover:text-orange-900 hover:bg-orange-50'
+                              : 'text-green-600 hover:text-green-900 hover:bg-green-50'
+                            }`}
+                        >
+                          <Shield className="h-3.5 w-3.5" />
+                          {u.isActive ? 'Deactivate' : 'Activate'}
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(u)}
+                          className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 hover:text-red-900 hover:bg-red-50 rounded transition-colors"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          Delete
+                        </button>
+                      </div>
+
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
           </div>
 
           {/* Statistics Cards */}

@@ -60,17 +60,17 @@ export function NotificationsTab() {
     // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(notification => {
-        const customerName = typeof notification.customer === 'string' 
-          ? notification.customer 
+        const customerName = typeof notification.customer === 'string'
+          ? notification.customer
           : notification.customer?.name || '';
-        const customerEmail = typeof notification.customer === 'string' 
-          ? '' 
+        const customerEmail = typeof notification.customer === 'string'
+          ? ''
           : notification.customer?.email || '';
 
         return customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-               customerEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-               notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-               notification.message.toLowerCase().includes(searchTerm.toLowerCase());
+          customerEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          notification.message.toLowerCase().includes(searchTerm.toLowerCase());
       });
     }
 
@@ -192,7 +192,7 @@ export function NotificationsTab() {
   };
 
   const handleSelectNotification = (notificationId: string) => {
-    setSelectedNotifications(prev => 
+    setSelectedNotifications(prev =>
       prev.includes(notificationId)
         ? prev.filter(id => id !== notificationId)
         : [...prev, notificationId]
@@ -405,7 +405,9 @@ export function NotificationsTab() {
 
       {/* Notifications Table */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
+
+        {/* ── DESKTOP TABLE (hidden on mobile) ─────────────── */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
@@ -417,27 +419,13 @@ export function NotificationsTab() {
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Customer
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Title
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Channel
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Scheduled
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Channel</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Scheduled</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -471,20 +459,15 @@ export function NotificationsTab() {
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {typeof notification.customer === 'string' 
-                            ? notification.customer 
-                            : notification.customer?.name || 'Unknown'
-                          }
-                        </div>
-                        {typeof notification.customer !== 'string' && notification.customer && (
-                          <div className="text-sm text-gray-500">{notification.customer.email}</div>
-                        )}
+                      <div className="text-sm font-medium text-gray-900">
+                        {typeof notification.customer === 'string' ? notification.customer : notification.customer?.name || 'Unknown'}
                       </div>
+                      {typeof notification.customer !== 'string' && notification.customer && (
+                        <div className="text-sm text-gray-500">{notification.customer.email}</div>
+                      )}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900 font-medium">{notification.title}</div>
+                      <div className="text-sm font-medium text-gray-900">{notification.title}</div>
                       <div className="text-sm text-gray-500 truncate max-w-xs">{notification.message}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -517,36 +500,12 @@ export function NotificationsTab() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
-                        <button
-                          onClick={() => handleViewNotification(notification)}
-                          className="text-gray-400 hover:text-gray-600"
-                          title="View Details"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleEditNotification(notification)}
-                          className="text-gray-400 hover:text-gray-600"
-                          title="Edit Notification"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
+                        <button onClick={() => handleViewNotification(notification)} className="text-gray-400 hover:text-gray-600" title="View Details"><Eye className="h-4 w-4" /></button>
+                        <button onClick={() => handleEditNotification(notification)} className="text-gray-400 hover:text-gray-600" title="Edit">         <Edit className="h-4 w-4" /></button>
                         {notification.status === 'pending' && (
-                          <button
-                            onClick={() => handleSendNotification(notification)}
-                            className="text-gray-400 hover:text-blue-600"
-                            title="Send Now"
-                          >
-                            <Send className="h-4 w-4" />
-                          </button>
+                          <button onClick={() => handleSendNotification(notification)} className="text-gray-400 hover:text-blue-600" title="Send Now">     <Send className="h-4 w-4" /></button>
                         )}
-                        <button
-                          onClick={() => handleDeleteNotification(notification)}
-                          className="text-gray-400 hover:text-red-600"
-                          title="Delete Notification"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                        <button onClick={() => handleDeleteNotification(notification)} className="text-gray-400 hover:text-red-600" title="Delete">       <Trash2 className="h-4 w-4" /></button>
                       </div>
                     </td>
                   </tr>
@@ -555,6 +514,112 @@ export function NotificationsTab() {
             </tbody>
           </table>
         </div>
+
+        {/* ── MOBILE CARDS (hidden on desktop) ─────────────── */}
+        <div className="md:hidden">
+
+          {/* Mobile select-all bar */}
+          {filteredNotifications.length > 0 && !loading && (
+            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border-b border-gray-200">
+              <input
+                type="checkbox"
+                onChange={handleSelectAll}
+                checked={selectedNotifications.length === filteredNotifications.length && filteredNotifications.length > 0}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-xs text-gray-500">
+                {selectedNotifications.length > 0
+                  ? `${selectedNotifications.length} selected`
+                  : 'Select all'}
+              </span>
+            </div>
+          )}
+
+          {loading ? (
+            <div className="flex items-center justify-center gap-2 py-12 text-gray-500">
+              <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-gray-600" />
+              <span className="text-sm">Loading notifications...</span>
+            </div>
+          ) : filteredNotifications.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 py-12 text-gray-500">
+              <Bell className="h-12 w-12 text-gray-300" />
+              <p className="text-sm">No notifications found</p>
+            </div>
+          ) : (
+            <ul className="divide-y divide-gray-100">
+              {filteredNotifications.map((notification) => {
+                const customerName = typeof notification.customer === 'string'
+                  ? notification.customer
+                  : notification.customer?.name || 'Unknown';
+                const customerEmail = typeof notification.customer !== 'string'
+                  ? notification.customer?.email
+                  : null;
+
+                return (
+                  <li key={notification._id} className="p-4 hover:bg-gray-50 transition-colors">
+
+                    {/* Row 1: checkbox + customer + status */}
+                    <div className="flex items-start gap-3 mb-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedNotifications.includes(notification._id)}
+                        onChange={() => handleSelectNotification(notification._id)}
+                        className="mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-sm font-semibold text-gray-900 truncate">{customerName}</p>
+                          <span className={`shrink-0 inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${getStatusColor(notification.status)}`}>
+                            {notification.status.charAt(0).toUpperCase() + notification.status.slice(1)}
+                          </span>
+                        </div>
+                        {customerEmail && (
+                          <p className="text-xs text-gray-400 truncate">{customerEmail}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Row 2: title + message preview */}
+                    <div className="ml-7 mb-3">
+                      <p className="text-sm font-medium text-gray-800 line-clamp-1">{notification.title}</p>
+                      <p className="text-xs text-gray-400 line-clamp-1">{notification.message}</p>
+                    </div>
+
+                    {/* Row 3: type + channel + scheduled */}
+                    <div className="ml-7 flex flex-wrap items-center gap-2 mb-3">
+                      <span className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${getTypeColor(notification.type)}`}>
+                        {notification.type.replace(/_/g, ' ').charAt(0).toUpperCase() + notification.type.replace(/_/g, ' ').slice(1)}
+                      </span>
+
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 rounded text-xs text-gray-600">
+                        {getChannelIcon(notification.channel)}
+                        {notification.channel.charAt(0).toUpperCase() + notification.channel.slice(1)}
+                      </span>
+
+                      <span className="ml-auto text-xs text-gray-400">
+                        {notification.scheduledFor
+                          ? new Date(notification.scheduledFor).toLocaleDateString()
+                          : 'Immediate'}
+                      </span>
+                    </div>
+
+                    {/* Row 4: actions */}
+                    <div className="ml-7 flex items-center gap-3 pt-2 border-t border-gray-100">
+                      <button onClick={() => handleViewNotification(notification)} className="text-gray-400 hover:text-gray-600" title="View Details"><Eye className="h-4 w-4" /></button>
+                      <button onClick={() => handleEditNotification(notification)} className="text-gray-400 hover:text-gray-600" title="Edit">         <Edit className="h-4 w-4" /></button>
+                      {notification.status === 'pending' && (
+                        <button onClick={() => handleSendNotification(notification)} className="text-gray-400 hover:text-blue-600" title="Send Now">     <Send className="h-4 w-4" /></button>
+                      )}
+                      <button onClick={() => handleDeleteNotification(notification)} className="ml-auto text-gray-400 hover:text-red-600" title="Delete"><Trash2 className="h-4 w-4" /></button>
+                    </div>
+
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+
       </div>
 
       {/* Create Notification Modal */}
