@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 export default function HomePage() {
   const router = useRouter();
@@ -20,15 +21,17 @@ export default function HomePage() {
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-        <div className="text-xl">Loading...</div>
-      </div>
+    <LoadingSpinner 
+      text="Loading ..." 
+      size='lg'
+    />
     );
   }
 
   return (
-    <div style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-      <div className="text-xl">Redirecting...</div>
-    </div>
+    <LoadingSpinner 
+      text="Redirecting..." 
+      size='lg'
+    />
   );
 }

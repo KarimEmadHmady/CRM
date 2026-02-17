@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { RegisterUser } from '@/features/auth/components/RegisterUser';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -37,9 +38,10 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
-      </div>
+          <LoadingSpinner 
+            text="Loading ..." 
+            size='lg'
+          />
     );
   }
 

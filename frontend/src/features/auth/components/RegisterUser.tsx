@@ -219,7 +219,7 @@ export const RegisterUser = ({ onClose }: RegisterUserProps) => {
               type="checkbox"
               checked={isAdmin}
               onChange={(e) => setIsAdmin(e.target.checked)}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="h-4 w-4 text-black focus:ring-blue-500 border-gray-300 rounded"
             />
             <label htmlFor="isAdmin" className="ml-2 block text-sm text-gray-900">
               Register as Admin
@@ -230,7 +230,7 @@ export const RegisterUser = ({ onClose }: RegisterUserProps) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-black hover:bg-gray-700 text-white py-2 px-4 rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isLoading ? 'Loading...' : 'Create Account'}
             </button>
@@ -238,7 +238,7 @@ export const RegisterUser = ({ onClose }: RegisterUserProps) => {
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md font-medium"
+                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md font-medium cursor-pointer"
               >
                 Cancel
               </button>

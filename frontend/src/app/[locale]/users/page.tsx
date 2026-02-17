@@ -213,7 +213,7 @@ export default function UsersPage() {
               </button>
               <button
                 onClick={() => router.push('/profile')}
-                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                className="flex items-center space-x-2 bg-black hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer"
               >
                 <UserCheck className="h-4 w-4" />
                 <span>Profile</span>
@@ -299,7 +299,7 @@ export default function UsersPage() {
                         {/* User Column */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-sm">
+                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-black to-gray-600 flex items-center justify-center shadow-sm">
                               <span className="text-sm font-semibold text-white">
                                 {u.username?.charAt(0)?.toUpperCase() || 'U'}
                               </span>

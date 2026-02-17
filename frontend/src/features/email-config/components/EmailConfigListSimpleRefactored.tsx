@@ -18,8 +18,8 @@ import {
 } from 'lucide-react';
 import { EmailConfig, EmailConfigFormData } from '../types/emailConfig.types';
 import { useEmailConfig } from '../hooks/useEmailConfig';
-import { EmailConfigIcon } from './EmailConfigIcon';
-import { formatDate, formatTimeAgo, validateEmailConfig } from '../utils/emailConfig.utils';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { formatTimeAgo, validateEmailConfig } from '../utils/emailConfig.utils';
 
 // CreateEmailConfigModal component
 const CreateEmailConfigModal: React.FC<{
@@ -477,9 +477,10 @@ export const EmailConfigListSimpleRefactored: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-gray-900"></div>
-      </div>
+      <LoadingSpinner 
+        text="Loading email configurations..." 
+        size='lg'
+      />
     );
   }
 
