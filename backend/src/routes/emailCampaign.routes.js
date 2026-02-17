@@ -17,6 +17,7 @@ router.post("/:id/launch", requirePermission('email_campaign_write'), asyncHandl
 router.post("/:id/schedule", requirePermission('email_campaign_write'), asyncHandler(EmailCampaignController.scheduleEmailCampaignController));
 router.post("/:id/pause", requirePermission('email_campaign_write'), asyncHandler(EmailCampaignController.pauseEmailCampaignController));
 router.post("/:id/resume", requirePermission('email_campaign_write'), asyncHandler(EmailCampaignController.resumeEmailCampaignController));
+router.post("/:id/reuse", requirePermission('email_campaign_write'), asyncHandler(EmailCampaignController.reuseEmailCampaignController));
 router.get("/:id/stats", requirePermission('stats_view'), asyncHandler(EmailCampaignController.getCampaignStatsController));
 router.get("/:id/recipients", requirePermission('email_campaign_read'), asyncHandler(EmailCampaignController.getTargetRecipientsController));
 router.delete("/:id", requirePermission('email_campaign_delete'), asyncHandler(EmailCampaignController.deleteEmailCampaignController));

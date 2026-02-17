@@ -117,6 +117,18 @@ class EmailCampaignApi {
     }
   }
 
+  // Reuse email campaign (create copy)
+  async reuseEmailCampaign(id: string): Promise<EmailCampaignResponse> {
+    try {
+      const response = await axios.post(`${API_URL}/email-campaigns/${id}/reuse`, {}, {
+        headers: this.getAuthHeaders()
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to reuse email campaign');
+    }
+  }
+
   // Pause email campaign
   async pauseEmailCampaign(id: string): Promise<EmailCampaignResponse> {
     try {

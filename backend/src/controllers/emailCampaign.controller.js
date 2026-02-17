@@ -171,4 +171,14 @@ export class EmailCampaignController {
         }
     }
 
+    static async reuseEmailCampaignController(req, res, next) {
+        try {
+            const { id } = req.params;
+            const newCampaign = await EmailService.reuseEmailCampaignService(id);
+            res.status(200).json({ success: true, data: newCampaign });
+        } catch (error) {
+            next(error);
+        }
+    }
+
 }

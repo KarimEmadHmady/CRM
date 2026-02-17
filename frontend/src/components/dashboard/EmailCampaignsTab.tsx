@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Plus, Filter, Mail, Send, Pause, MoreHorizontal, Edit, Trash2, BarChart3, Play, Eye, Users, Calendar, Clock } from 'lucide-react';
+import { Search, Plus, Filter, Mail, Send, Pause, MoreHorizontal, Edit, Trash2, BarChart3, Play, Eye, Users, Calendar, Clock, RefreshCw } from 'lucide-react';
 import { useEmailCampaigns } from '@/features/email-campaigns/hooks/useEmailCampaigns';
 import { CreateEmailCampaignModal } from '@/features/email-campaigns/components/CreateEmailCampaignModal';
 import { EditEmailCampaignModal } from '@/features/email-campaigns/components/EditEmailCampaignModal';
@@ -48,6 +48,7 @@ export function EmailCampaignsTab() {
     getCampaignStatistics,
     getTargetRecipients,
     testCampaign,
+    reuseCampaign,
     clearError
   } = useEmailCampaigns();
 
@@ -67,7 +68,7 @@ export function EmailCampaignsTab() {
 
     // Apply status filter
     if (selectedStatus !== 'all') {
-      filtered = filtered.filter(campaign => campaign.status === selectedStatus);
+      filtered = filtered.filter(campaign => (campaign.status || 'draft') === selectedStatus);
     }
 
     return filtered;
@@ -161,6 +162,14 @@ export function EmailCampaignsTab() {
   const handleResumeCampaign = async (campaign: EmailCampaign) => {
     try {
       await resumeCampaign(campaign._id);
+    } catch (error) {
+      // Error is handled by the hook
+    }
+  };
+
+  const handleReuseCampaign = async (campaign: EmailCampaign) => {
+    try {
+      await reuseCampaign(campaign._id);
     } catch (error) {
       // Error is handled by the hook
     }
@@ -360,32 +369,32 @@ export function EmailCampaignsTab() {
                 </tr>
               ) : (
                 filteredCampaigns.map((campaign) => (
-                  <tr key={campaign._id} className="hover:bg-gray-50">
+                  <tr key={campaign._id || `campaign-${Math.random()}`} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{campaign.name}</div>
-                        <div className="text-sm text-gray-500">{campaign.subject}</div>
+                        <div className="text-sm font-medium text-gray-900">{campaign.name || 'Untitled Campaign'}</div>
+                        <div className="text-sm text-gray-500">{campaign.subject || 'No subject'}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(campaign.status)}`}>
-                        {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(campaign.status || 'draft')}`}>
+                        {(campaign.status || 'draft').charAt(0).toUpperCase() + (campaign.status || 'draft').slice(1)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div>{campaign.statistics.sentCount.toLocaleString()}</div>
+                      <div>{(campaign.statistics?.sentCount || 0).toLocaleString()}</div>
                       <div className="text-xs text-gray-500">
-                        {campaign.statistics.totalRecipients > 0 ? Math.round((campaign.statistics.sentCount / campaign.statistics.totalRecipients) * 100) : 0}% sent
+                        {(campaign.statistics?.totalRecipients || 0) > 0 ? Math.round(((campaign.statistics?.sentCount || 0) / (campaign.statistics?.totalRecipients || 0)) * 100) : 0}% sent
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {getOpenRate(campaign.statistics.openedCount, campaign.statistics.sentCount)}%
+                      {getOpenRate(campaign.statistics?.openedCount || 0, campaign.statistics?.sentCount || 0)}%
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {getClickRate(campaign.statistics.openedCount, campaign.statistics.sentCount)}%
+                      {getClickRate(campaign.statistics?.openedCount || 0, campaign.statistics?.sentCount || 0)}%
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(campaign.createdAt).toLocaleDateString()}
+                      {new Date(campaign.createdAt || Date.now()).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
@@ -424,7 +433,7 @@ export function EmailCampaignsTab() {
                         >
                           <Edit className="h-4 w-4" />
                         </button>
-                        {(campaign.status === 'draft' || campaign.status === 'paused') && (
+                        {((campaign.status || 'draft') === 'draft' || (campaign.status || 'draft') === 'paused') && (
                           <>
                             <button
                               onClick={() => handleLaunchCampaign(campaign)}
@@ -440,9 +449,18 @@ export function EmailCampaignsTab() {
                             >
                               <Calendar className="h-4 w-4" />
                             </button>
+                            {(campaign.status || 'draft') === 'draft' && (
+                              <button
+                                onClick={() => handleResumeCampaign(campaign)}
+                                className="text-gray-400 hover:text-green-600"
+                                title="Start Campaign"
+                              >
+                                <Play className="h-4 w-4" />
+                              </button>
+                            )}
                           </>
                         )}
-                        {campaign.status === 'active' && (
+                        {(campaign.status || 'draft') === 'active' && (
                           <button
                             onClick={() => handlePauseCampaign(campaign)}
                             className="text-gray-400 hover:text-yellow-600"
@@ -451,13 +469,22 @@ export function EmailCampaignsTab() {
                             <Pause className="h-4 w-4" />
                           </button>
                         )}
-                        {campaign.status === 'paused' && (
+                        {(campaign.status || 'draft') === 'paused' && (
                           <button
                             onClick={() => handleResumeCampaign(campaign)}
                             className="text-gray-400 hover:text-green-600"
                             title="Resume Campaign"
                           >
                             <Play className="h-4 w-4" />
+                          </button>
+                        )}
+                        {(campaign.status || 'draft') === 'completed' && (
+                          <button
+                            onClick={() => handleReuseCampaign(campaign)}
+                            className="text-gray-400 hover:text-blue-600"
+                            title="Reuse Campaign"
+                          >
+                            <RefreshCw className="h-4 w-4" />
                           </button>
                         )}
                         <button

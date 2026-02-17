@@ -117,10 +117,8 @@ export const useEmailCampaigns = () => {
       setError(null);
       const response = await emailCampaignApi.launchEmailCampaign(id);
       if (response.success) {
-        setCampaigns(prev => prev.map(campaign => 
-          campaign._id === id ? response.data : campaign
-        ));
-        calculateStats(campaigns.map(c => c._id === id ? response.data : c));
+        // Refresh campaigns to get complete updated data
+        await fetchCampaigns();
       }
       return response.data;
     } catch (err: any) {
@@ -129,7 +127,7 @@ export const useEmailCampaigns = () => {
     } finally {
       setLoading(false);
     }
-  }, [campaigns]);
+  }, []);
 
   // Schedule campaign
   const scheduleCampaign = useCallback(async (id: string, scheduledFor: string) => {
@@ -138,10 +136,8 @@ export const useEmailCampaigns = () => {
       setError(null);
       const response = await emailCampaignApi.scheduleEmailCampaign(id, scheduledFor);
       if (response.success) {
-        setCampaigns(prev => prev.map(campaign => 
-          campaign._id === id ? response.data : campaign
-        ));
-        calculateStats(campaigns.map(c => c._id === id ? response.data : c));
+        // Refresh campaigns to get complete updated data
+        await fetchCampaigns();
       }
       return response.data;
     } catch (err: any) {
@@ -150,7 +146,26 @@ export const useEmailCampaigns = () => {
     } finally {
       setLoading(false);
     }
-  }, [campaigns]);
+  }, []);
+
+  // Reuse campaign (create copy)
+  const reuseCampaign = useCallback(async (id: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await emailCampaignApi.reuseEmailCampaign(id);
+      if (response.success) {
+        // Refresh campaigns to get complete updated data
+        await fetchCampaigns();
+      }
+      return response.data;
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // Pause campaign
   const pauseCampaign = useCallback(async (id: string) => {
@@ -159,10 +174,8 @@ export const useEmailCampaigns = () => {
       setError(null);
       const response = await emailCampaignApi.pauseEmailCampaign(id);
       if (response.success) {
-        setCampaigns(prev => prev.map(campaign => 
-          campaign._id === id ? response.data : campaign
-        ));
-        calculateStats(campaigns.map(c => c._id === id ? response.data : c));
+        // Refresh campaigns to get complete updated data
+        await fetchCampaigns();
       }
       return response.data;
     } catch (err: any) {
@@ -171,7 +184,7 @@ export const useEmailCampaigns = () => {
     } finally {
       setLoading(false);
     }
-  }, [campaigns]);
+  }, []);
 
   // Resume campaign
   const resumeCampaign = useCallback(async (id: string) => {
@@ -180,10 +193,8 @@ export const useEmailCampaigns = () => {
       setError(null);
       const response = await emailCampaignApi.resumeEmailCampaign(id);
       if (response.success) {
-        setCampaigns(prev => prev.map(campaign => 
-          campaign._id === id ? response.data : campaign
-        ));
-        calculateStats(campaigns.map(c => c._id === id ? response.data : c));
+        // Refresh campaigns to get complete updated data
+        await fetchCampaigns();
       }
       return response.data;
     } catch (err: any) {
@@ -192,7 +203,7 @@ export const useEmailCampaigns = () => {
     } finally {
       setLoading(false);
     }
-  }, [campaigns]);
+  }, []);
 
   // Get campaign statistics
   const getCampaignStatistics = useCallback(async (id: string): Promise<CampaignStatistics> => {
@@ -264,6 +275,7 @@ export const useEmailCampaigns = () => {
     testCampaign,
     launchCampaign,
     scheduleCampaign,
+    reuseCampaign,
     pauseCampaign,
     resumeCampaign,
     getCampaignStatistics,
