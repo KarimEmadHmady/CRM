@@ -2,6 +2,7 @@ import {NextIntlClientProvider, hasLocale} from 'next-intl';
 import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
 import ReduxProvider from '@/redux/ReduxProvider';
+import InstallPWAButton from '@/components/PWAInstallButton';
 
 export default async function LocaleLayout({
   children,
@@ -24,6 +25,7 @@ export default async function LocaleLayout({
             {children}
           </NextIntlClientProvider>
         </ReduxProvider>
+        <InstallPWAButton />
       </body>
     </html>
   );
