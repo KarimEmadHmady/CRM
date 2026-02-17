@@ -426,10 +426,10 @@ export function CustomersTab() {
         <p className="text-sm">No customers found</p>
       </div>
     ) : (
-      <ul className="divide-y divide-gray-100">
+      <ul className="divide-y divide-gray-100 space-y-4 p-4">
         {filteredCustomers.map((customer) => (
-          <li key={customer._id} className="p-4 hover:bg-gray-50 transition-colors">
-
+          <li key={customer._id} className="p-4 hover:bg-gray-50 transition-colors bg-white rounded-lg border border-gray-200 shadow-sm">
+            
             {/* Top row: name + actions */}
             <div className="flex items-start justify-between gap-2 mb-3">
               <div className="min-w-0">

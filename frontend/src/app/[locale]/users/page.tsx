@@ -356,9 +356,9 @@ export default function UsersPage() {
                   {searchTerm || selectedRole !== 'all' ? 'No users found matching your filters.' : 'No users available.'}
                 </div>
               ) : (
-                <ul className="divide-y divide-gray-100">
+                <ul className="divide-y divide-gray-100 space-y-4 p-4">
                   {filteredUsers.map((u) => (
-                    <li key={u._id || `user-${u.username}`} className="p-4 hover:bg-gray-50 transition-colors">
+                    <li key={u._id || `user-${u.username}`} className="p-4 hover:bg-gray-50 transition-colors  bg-white rounded-lg border border-gray-200 shadow-sm">
 
                       {/* Row 1: avatar + name + email + status */}
                       <div className="flex items-center gap-3 mb-3">

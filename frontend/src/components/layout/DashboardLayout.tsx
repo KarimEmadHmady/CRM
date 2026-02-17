@@ -70,7 +70,7 @@ export function DashboardLayout({ user, onLogout }: DashboardLayoutProps) {
       
       {/* Main Content */}
       <div className="lg:pl-64">
-        <main className="py-6">
+        <main className="py-12">
           {getCurrentTab()}
         </main>
       </div>

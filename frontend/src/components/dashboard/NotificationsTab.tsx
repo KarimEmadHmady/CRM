@@ -546,7 +546,7 @@ export function NotificationsTab() {
               <p className="text-sm">No notifications found</p>
             </div>
           ) : (
-            <ul className="divide-y divide-gray-100">
+            <ul className="divide-y divide-gray-100 space-y-4 p-4">
               {filteredNotifications.map((notification) => {
                 const customerName = typeof notification.customer === 'string'
                   ? notification.customer
@@ -556,7 +556,7 @@ export function NotificationsTab() {
                   : null;
 
                 return (
-                  <li key={notification._id} className="p-4 hover:bg-gray-50 transition-colors">
+                  <li key={notification._id} className="p-4 hover:bg-gray-50 transition-colors bg-white rounded-lg border border-gray-200 shadow-sm ">
 
                     {/* Row 1: checkbox + customer + status */}
                     <div className="flex items-start gap-3 mb-2">

@@ -531,7 +531,7 @@ export function SubscriptionsTab() {
               <p className="text-sm">No subscriptions found</p>
             </div>
           ) : (
-            <ul className="divide-y divide-gray-100">
+            <ul className="divide-y divide-gray-100 space-y-4 p-4">
               {filteredSubscriptions.map((subscription) => {
                 const customerName = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer?.name || 'Unknown';
                 const customerEmail = typeof subscription.customer !== 'string' ? subscription.customer?.email : null;
@@ -539,7 +539,7 @@ export function SubscriptionsTab() {
                 const expired = isExpired(subscription.endDate);
 
                 return (
-                  <li key={subscription._id} className="p-4 hover:bg-gray-50 transition-colors">
+                  <li key={subscription._id} className="p-4 hover:bg-gray-50 transition-colors  bg-white rounded-lg border border-gray-200 shadow-sm">
 
                     {/* Row 1: checkbox + customer + active badge */}
                     <div className="flex items-start gap-3 mb-2">

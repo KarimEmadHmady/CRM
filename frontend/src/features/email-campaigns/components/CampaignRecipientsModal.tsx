@@ -119,9 +119,9 @@ export function CampaignRecipientsModal({
           <div className="bg-white border border-gray-200 rounded-lg overflow-hidden flex-1 flex flex-col">
             <div className="flex-1 overflow-y-auto">
               {filteredRecipients.length > 0 ? (
-                <div className="divide-y divide-gray-200">
+                <div className="divide-y divide-gray-200 space-y-4 p-4">
                   {filteredRecipients.map((customer, index) => (
-                    <div key={customer._id} className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                    <div key={customer._id} className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors  bg-white rounded-lg border border-gray-200 shadow-sm">
                       <div className="flex items-center space-x-3">
                         <div className="flex-shrink-0">
                           <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">

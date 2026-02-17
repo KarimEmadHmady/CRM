@@ -432,7 +432,7 @@ export function EmailCampaignsTab() {
               <p className="text-sm">No campaigns found</p>
             </div>
           ) : (
-            <ul className="divide-y divide-gray-100">
+            <ul className="divide-y divide-gray-100 space-y-4 p-4">
               {filteredCampaigns.map((campaign) => {
                 const status = campaign.status || 'draft';
                 const sent = campaign.statistics?.sentCount || 0;
@@ -441,7 +441,7 @@ export function EmailCampaignsTab() {
                 const sentPct = total > 0 ? Math.round((sent / total) * 100) : 0;
 
                 return (
-                  <li key={campaign._id || `campaign-${Math.random()}`} className="p-4 hover:bg-gray-50 transition-colors">
+                  <li key={campaign._id || `campaign-${Math.random()}`} className="p-4 hover:bg-gray-50 transition-colors bg-white rounded-lg border border-gray-200 shadow-sm ">
 
                     {/* Row 1: name + status badge */}
                     <div className="flex items-start justify-between gap-2 mb-1">
