@@ -282,7 +282,7 @@ export function CustomersTab() {
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <div className="text-sm text-gray-600 mb-1">Total Revenue</div>
           <div className="text-2xl font-bold text-gray-900">
-            ${stats?.totalSpent || customers.reduce((sum, c) => sum + c.totalSpent, 0).toLocaleString()}
+             EGP {stats?.totalSpent || customers.reduce((sum, c) => sum + c.totalSpent, 0).toLocaleString()}
           </div>
         </div>
       </div>
@@ -383,7 +383,7 @@ export function CustomersTab() {
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                ${customer.totalSpent.toLocaleString()}
+                L.E {customer.totalSpent.toLocaleString()}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {new Date(customer.createdAt).toLocaleDateString()}

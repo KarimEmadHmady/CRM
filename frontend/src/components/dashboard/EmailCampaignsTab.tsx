@@ -183,6 +183,7 @@ export function EmailCampaignsTab() {
   const handleViewStats = async (campaign: EmailCampaign) => {
     try {
       const stats = await getCampaignStatistics(campaign._id);
+      setCampaignToView(campaign);
       setCampaignStats(stats);
       setShowStatsModal(true);
     } catch (error) {
@@ -193,6 +194,7 @@ export function EmailCampaignsTab() {
   const handleViewRecipients = async (campaign: EmailCampaign) => {
     try {
       const recipients = await getTargetRecipients(campaign._id);
+      setCampaignToView(campaign);
       setCampaignRecipients(recipients);
       setShowRecipientsModal(true);
     } catch (error) {
@@ -320,11 +322,11 @@ export function EmailCampaignsTab() {
       </div>
 
 
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
 
         {/* ── DESKTOP TABLE (hidden on mobile) ─────────────── */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full">
+        <div className="hidden md:block">
+          <table className="w-full min-w-[1000px]">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Campaign</th>

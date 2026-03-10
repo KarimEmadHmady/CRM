@@ -41,9 +41,9 @@ export function CreateSubscriptionModal({ isOpen, onClose, onSubmit, loading = f
   };
 
   const packageTypes = [
-    { value: 'basic', label: 'Basic', price: 29 },
-    { value: 'premium', label: 'Premium', price: 99 },
-    { value: 'vip', label: 'VIP', price: 199 },
+    { value: 'basic', label: 'Basic', price: 250 },
+    { value: 'premium', label: 'Premium', price: 450 },
+    { value: 'vip', label: 'VIP', price: 1500 },
     { value: 'custom', label: 'Custom', price: 0 }
   ];
 
@@ -225,7 +225,7 @@ export function CreateSubscriptionModal({ isOpen, onClose, onSubmit, loading = f
                 >
                   {packageTypes.map((pkg) => (
                     <option key={pkg.value} value={pkg.value}>
-                      {pkg.label} {pkg.price > 0 && `($${pkg.price})`}
+                      {pkg.label} {pkg.price > 0 && `(EGP ${pkg.price})`}
                     </option>
                   ))}
                 </select>

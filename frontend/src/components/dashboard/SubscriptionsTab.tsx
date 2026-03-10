@@ -115,6 +115,8 @@ export function SubscriptionsTab() {
   const handleCreateSubscription = async (subscriptionData: CreateSubscriptionData) => {
     try {
       await createSubscription(subscriptionData);
+      // Refresh subscriptions so that customer field comes populated (name/email instead of raw ID)
+      await fetchSubscriptions();
     } catch (error) {
       // Error is handled by the hook
     }
@@ -299,7 +301,7 @@ export function SubscriptionsTab() {
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <div className="text-sm text-gray-600 mb-1">Total Revenue</div>
           <div className="text-2xl font-bold text-gray-900">
-            ${stats?.totalRevenue || subscriptions.reduce((sum, s) => sum + s.price, 0).toLocaleString()}
+            EGP { (stats?.totalRevenue || subscriptions.reduce((sum, s) => sum + s.price, 0)).toLocaleString() }
           </div>
         </div>
       </div>
@@ -466,7 +468,7 @@ export function SubscriptionsTab() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${subscription.price}
+                      EGP {subscription.price}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="space-y-1">
@@ -570,7 +572,7 @@ export function SubscriptionsTab() {
                       <span className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${getPaymentStatusColor(subscription.paymentStatus)}`}>
                         {subscription.paymentStatus.charAt(0).toUpperCase() + subscription.paymentStatus.slice(1)}
                       </span>
-                      <span className="ml-auto text-sm font-semibold text-gray-800">${subscription.price}</span>
+                      <span className="ml-auto text-sm font-semibold text-gray-800">EGP {subscription.price}</span>
                     </div>
 
                     {/* Row 3: period + expiry warnings */}

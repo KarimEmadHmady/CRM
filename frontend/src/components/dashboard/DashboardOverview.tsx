@@ -403,7 +403,7 @@ export function DashboardOverview() {
               <p className="text-2xl font-bold text-gray-900 mt-2">{stats.subscriptions.total}</p>
               <div className="flex items-center mt-2">
                 <DollarSign className="h-4 w-4 text-indigo-500 mr-1" />
-                <span className="text-sm text-gray-600">${stats.subscriptions.totalRevenue.toLocaleString()}</span>
+                <span className="text-sm text-gray-600">EGP {stats.subscriptions.totalRevenue.toLocaleString()}</span>
               </div>
             </div>
             <div className="bg-indigo-50 p-3 rounded-xl">
@@ -440,7 +440,7 @@ export function DashboardOverview() {
             </div>
             <div className="flex justify-between items-center pb-3 border-b border-gray-100">
               <span className="text-sm text-gray-600">Total Spent</span>
-              <span className="font-semibold text-gray-900">${stats.customers.totalSpent.toLocaleString()}</span>
+              <span className="font-semibold text-gray-900"> EGP {stats.customers.totalSpent.toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center pb-3 border-b border-gray-100">
               <span className="text-sm text-gray-600">Active Subscriptions</span>
