@@ -205,7 +205,6 @@ export class EmailService {
           <!-- ARABIC BODY -->
           <tr>
             <td style="padding:36px 40px 20px;text-align:right;direction:rtl;">
-              <p style="margin:0 0 6px;font-size:13px;color:#999;text-transform:uppercase;letter-spacing:1px;">بالعربية</p>
               <div style="font-size:15px;line-height:2;color:#444;">
                 ${nl2br(bodyAr)}
               </div>
@@ -222,7 +221,6 @@ export class EmailService {
           <!-- ENGLISH BODY -->
           <tr>
             <td style="padding:20px 40px 28px;text-align:left;direction:ltr;">
-              <p style="margin:0 0 6px;font-size:13px;color:#999;text-transform:uppercase;letter-spacing:1px;">In English</p>
               <div style="font-size:15px;line-height:2;color:#444;">
                 ${nl2br(bodyEn)}
               </div>
@@ -340,12 +338,12 @@ export class EmailService {
                             </ul>
                             <p style="margin-top:20px;">Start now and transform how you run your gym.</p>
                         `,
-                        ctaHref: metadata?.categorySpecificLink || 'https://gymcore-system.netlify.app',
+                        ctaHref: metadata?.categorySpecificLink || 'https://gymcore-system.vercel.app',
                         ctaLabelAr: 'انتقل إلى لوحة التحكم',
                         ctaLabelEn: 'Go to Dashboard',
                         footerName: appName,
                         extraImages: [
-                            metadata?.categorySpecificImage || 'https://gymcore-system.netlify.app/234345555.jpg'
+                            metadata?.categorySpecificImage || 'https://gymcore-system.vercel.app/attendsheet.jpg'
                         ]
                     });
                 }
@@ -422,7 +420,7 @@ export class EmailService {
 
                 const accentColor = isGym ? '#c0392b' : isRestaurant ? '#b5451b' : '#e74c3c';
                 const ctaHref    = isGym
-                    ? 'https://gymcore-system.netlify.app'
+                    ? 'https://gymcore-system.vercel.app'
                     : isRestaurant ? 'https://qrx-menu.vercel.app' : null;
 
                 return this._baseLayout({
@@ -461,7 +459,7 @@ export class EmailService {
                 const isGym   = category === 'gym';
                 const isRest  = category === 'restaurant';
                 const ctaHref = isGym
-                    ? 'https://gymcore-system.netlify.app'
+                    ? 'https://gymcore-system.vercel.app'
                     : isRest ? 'https://qrx-menu.vercel.app' : null;
 
                 return this._baseLayout({
@@ -621,7 +619,7 @@ export class EmailService {
                 const isGym    = category === 'gym';
                 const isRest   = category === 'restaurant';
                 const ctaHref  = isGym
-                    ? 'https://gymcore-system.netlify.app'
+                    ? 'https://gymcore-system.vercel.app'
                     : isRest ? 'https://qrx-menu.vercel.app' : null;
 
                 return this._baseLayout({
@@ -737,7 +735,7 @@ export class EmailService {
                     customer: recipient._id,
                     type: 'custom',
                     title: campaign.subject,
-                    message: campaign.content,
+                    message: injectName(campaign.content, recipient.name),
                     status: 'sent',
                     sentAt: new Date(),
                     channel: 'email',
@@ -754,7 +752,7 @@ export class EmailService {
                     customer: recipient._id,
                     type: 'custom',
                     title: campaign.subject,
-                    message: campaign.content,
+                    message: injectName(campaign.content, recipient.name),
                     status: 'failed',
                     channel: 'email',
                     isAutomated: false,
@@ -828,10 +826,14 @@ export class EmailService {
         const results = [];
         for (const email of testEmails) {
             if (email.trim()) {
+                // Personalize with the matching customer's name, falling back to the email's local part
+                const customer = await Customer.findOne({ email: email.trim() });
+                const name = customer?.name || email.trim().split('@')[0];
+
                 const result = await this.testEmailService({
                     to: email.trim(),
                     subject: campaign.subject,
-                    content: campaign.content,
+                    content: injectName(campaign.content, name),
                     template: campaign.template
                 });
                 results.push({ email: email.trim(), result });

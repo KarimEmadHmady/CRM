@@ -19,11 +19,11 @@ router.post("/refresh-token", authenticateToken, asyncHandler(AuthController.ref
 
 // User management routes (admin only for most operations)
 router.get("/users", authenticateToken, asyncHandler(UserController.getAllUsersController));
-router.get("/users/:id", authenticateToken,  asyncHandler(UserController.getUserByIdController));
+router.get("/users/stats", authenticateToken, asyncHandler(UserController.getUsersStatsController));
 router.post("/users", authenticateToken,  asyncHandler(UserController.createUserController));
+router.get("/users/:id", authenticateToken,  asyncHandler(UserController.getUserByIdController));
 router.put("/users/:id", authenticateToken,  asyncHandler(UserController.updateUserController)); // validateUpdateUser
 router.delete("/users/:id", authenticateToken,  asyncHandler(UserController.deleteUserController));
 router.patch("/users/:id/toggle-status", authenticateToken,  asyncHandler(UserController.toggleUserStatusController));
-router.get("/users/stats", authenticateToken, asyncHandler(UserController.getUsersStatsController));
 
 export default router;

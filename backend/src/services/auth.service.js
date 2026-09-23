@@ -11,7 +11,7 @@ export class AuthService {
         );
     }
 
-    static async registerService({ username, email, password, role = 'staff', permissions }) {
+    static async registerService({ username, email, password }) {
         // Check if user already exists
         const existingUser = await User.findOne({
             $or: [{ email }, { username }]
@@ -21,43 +21,22 @@ export class AuthService {
             throw new Error('User with this email or username already exists');
         }
 
-        // Set default permissions based on role
-        let defaultPermissions = [];
-        switch (role) {
-            case 'admin':
-                defaultPermissions = [
-                    'customer_read', 'customer_write', 'customer_delete',
-                    'subscription_read', 'subscription_write', 'subscription_delete',
-                    'notification_read', 'notification_write', 'notification_delete',
-                    'email_campaign_read', 'email_campaign_write', 'email_campaign_delete',
-                    'stats_view'
-                ];
-                break;
-            case 'manager':
-                defaultPermissions = [
-                    'customer_read', 'customer_write',
-                    'subscription_read', 'subscription_write',
-                    'notification_read', 'notification_write',
-                    'email_campaign_read', 'email_campaign_write',
-                    'stats_view'
-                ];
-                break;
-            case 'staff':
-                defaultPermissions = [
-                    'customer_read', 'customer_write',
-                    'subscription_read',
-                    'notification_read',
-                    'stats_view'
-                ];
-                break;
-        }
+        // Public self-registration always creates a 'staff' account with default
+        // permissions. Role/permissions can only be elevated by an existing admin
+        // via POST /api/auth/users (UserController.createUserController).
+        const defaultPermissions = [
+            'customer_read', 'customer_write',
+            'subscription_read',
+            'notification_read',
+            'stats_view'
+        ];
 
         const user = await User.create({
             username,
             email,
             password,
-            role,
-            permissions: permissions || defaultPermissions
+            role: 'staff',
+            permissions: defaultPermissions
         });
 
         // Remove password from response

@@ -7,10 +7,15 @@ export class CustomerController {
         try {
             const { name, email, phone, address, category, notes } = req.body;
             const customer = await CustomerService.createCustomerService({ name, email, phone, address, category, notes });
-            
-            // Send welcome notification
-            await NotificationService.createWelcomeNotificationService(customer._id);
-            
+
+            // Welcome email is a side effect of customer creation, not a precondition
+            // for it succeeding — don't fail the request if sending it fails.
+            try {
+                await NotificationService.createWelcomeNotificationService(customer._id);
+            } catch (notificationError) {
+                console.error(`⚠️ Welcome notification failed for customer ${customer._id}:`, notificationError.message);
+            }
+
             res.status(201).json({ success: true, data: customer });
         } catch (error) {
             next(error);

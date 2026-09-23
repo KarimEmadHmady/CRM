@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { EmailConfigController } from '../controllers/emailConfig.controller.js';
-import { authenticateToken } from '../middlewares/auth.middleware.js';
+import { authenticateToken, requireRole } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
-// Apply authentication middleware to all routes
+// Email configs hold SMTP/Gmail credentials, so restrict the whole router to admins.
 router.use(authenticateToken);
+router.use(requireRole('admin'));
 
 // CRUD operations
 router.post('/', EmailConfigController.createEmailConfigController);

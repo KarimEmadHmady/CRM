@@ -437,16 +437,16 @@ export class NotificationService {
 
             if (customer.category === 'gym') {
                 categorySpecificContent = 'نحن هنا لمساعدتك في إدارة ناديك بكفاءة أعلى! يتيح لك نظامنا إدارة الاشتراكات والعملاء والمدفوعات والتقارير بسهولة، مما يساعدك على تطوير عملك وتوفير وقتك للتركيز على نمو مشروعك.\n\nWe are here to help you manage your gym more efficiently! Our system allows you to manage memberships, clients, payments, and reports بسهولة, helping you grow your business and save time to focus on expansion.';
-                categorySpecificImage = 'https://gymcore-system.netlify.app/234345555.jpg';
-                categorySpecificLink = 'https://gymcore-system.netlify.app';
+                categorySpecificImage = 'https://gymcore-system.vercel.app/attendsheet.jpg';
+                categorySpecificLink = 'https://gymcore-system.vercel.app';
             } else if (customer.category === 'restaurant') {
     categorySpecificContent = 'نساعدك على إدارة مطعمك بكفاءة واحترافية! يتيح لك نظامنا إدارة المنيو الإلكتروني والطلبات الأونلاين وخدمات التوصيل بسهولة، مع متابعة الطلبات والعملاء والتقارير في مكان واحد لتطوير عملك وزيادة أرباحك.\n\nWe help you manage your restaurant efficiently and professionally! Our system enables you to manage your digital menu, online orders, and delivery services easily, while tracking orders, customers, and reports in one place to grow your business and increase revenue.';
                 categorySpecificImage = 'https://qrx-menu.vercel.app/1.PNG';
                 categorySpecificLink = 'https://qrx-menu.vercel.app';
             } else {
                 categorySpecificContent = 'نحن سعداء بانضمامك إلى مجتمعنا! نتطلع إلى تزويدك بخدمة ودعم ممتازين.\n\nWe\'re thrilled to have you join our community! We look forward to providing you with excellent service and support.';
-                categorySpecificImage = 'https://gymcore-system.netlify.app/234345555.jpg';
-                categorySpecificLink = 'https://gymcore-system.netlify.app';
+                categorySpecificImage = 'https://gymcore-system.vercel.app/attendsheet.jpg';
+                categorySpecificLink = 'https://gymcore-system.vercel.app';
             }
 
             const message = `عزيزي ${customer.name}، مرحباً بك في خدمتنا! ${categorySpecificContent} إذا كان لديك أي أسئلة، فلا تتردد في التواصل معنا.\n\nDear ${customer.name}, welcome to our service! ${categorySpecificContent} If you have any questions, please don't hesitate to reach out.`;

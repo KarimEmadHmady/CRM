@@ -1,8 +1,39 @@
 // seedCampaigns.mjs
 // Run: node seedCampaigns.mjs
+import dotenv from "dotenv";
+dotenv.config();
 
-const BASE_URL = "http://localhost:5000/api/email-campaigns";
+const API_ROOT = process.env.SEED_API_URL || "http://localhost:5000/api";
+const BASE_URL = `${API_ROOT}/email-campaigns`;
+const LOGIN_EMAIL = process.env.SEED_ADMIN_EMAIL;
+const LOGIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD;
 const CREATED_BY = "admin";
+
+async function login() {
+  if (!LOGIN_EMAIL || !LOGIN_PASSWORD) {
+    throw new Error(
+      "Missing SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD in backend/.env. " +
+      "These routes require an authenticated admin token."
+    );
+  }
+
+  const response = await fetch(`${API_ROOT}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: LOGIN_EMAIL, password: LOGIN_PASSWORD })
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Login failed (HTTP ${response.status}): ${body}`);
+  }
+
+  const { data } = await response.json();
+  if (!data?.token) {
+    throw new Error("Login response did not include a token");
+  }
+  return data.token;
+}
 
 const campaigns = [
 
@@ -24,7 +55,7 @@ const campaigns = [
 - إرسال إشعارات تلقائية للأعضاء
 - التحكم الكامل من لوحة تحكم احترافية
 
-ابدأ الآن على: https://gymcore-system.netlify.app
+ابدأ الآن على: https://gymcore-system.vercel.app
 
 Dear {{name}},
 
@@ -37,7 +68,7 @@ With GymCore you can:
 - Send automated renewal reminders to members
 - Control everything from a professional dashboard, anywhere
 
-Get started at: https://gymcore-system.netlify.app`,
+Get started at: https://gymcore-system.vercel.app`,
     targetAudience: "all",
     settings: { trackOpens: true, trackClicks: true, sendImmediately: false },
     createdBy: CREATED_BY,
@@ -648,6 +679,10 @@ async function seed() {
   console.log("🚀 Starting email campaign seed...\n");
   console.log(`📡 Target: ${BASE_URL}`);
   console.log(`📦 Total campaigns to insert: ${campaigns.length}\n`);
+
+  console.log("🔑 Logging in as admin...");
+  const token = await login();
+  console.log("✅ Logged in\n");
   console.log("─".repeat(60));
 
   let success = 0;
@@ -661,7 +696,10 @@ async function seed() {
     try {
       const response = await fetch(BASE_URL, {
         method:  "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body:    JSON.stringify(campaign)
       });
 
@@ -670,9 +708,9 @@ async function seed() {
         throw new Error(`HTTP ${response.status} — ${errBody}`);
       }
 
-      const data = await response.json();
+      const { data } = await response.json();
       console.log(`✅ [${index}/${campaigns.length}] ${campaign.name}`);
-      console.log(`        ID: ${data._id || data.id || "N/A"}`);
+      console.log(`        ID: ${data?._id || "N/A"}`);
       success++;
 
     } catch (err) {
